@@ -16,7 +16,6 @@ There are a few things needed prior to installing this module:
 ### Installing with Composer (recommended)
 The first step is to add our repo to your composer.json, by running the following (from the root of your project in command line):
 ```
-composer config repositories.feedoptimise-magento2-catalog-export vcs git@github.com:feedoptimise/magento2-catalog-export.git
 composer require feedoptimise/magento2-catalog-export
 ```
 Now you can enable our module by running the following (from the root of your project in command line):
@@ -89,23 +88,23 @@ Security Token = <SECURITY_TOKEN_HERE>
 
 Once installed, we (Feedoptimise) will confirm it is working correctly and our system will begin extracting data for your product feed.
 
-### Uninstalling with Composer (recommended)
+### Uninstalling (installed via composer)
 To uninstall our extension, run the following (from the root of your project in command line):
 ```
 php bin/magento module:disable Feedoptimise_CatalogExport
 php bin/magento setup:upgrade
 composer remove feedoptimise/magento2-catalog-export
-composer config --unset repositories.feedoptimise-magento2-catalog-export
 ```
 
-### Uninstalling (manually)
+### Uninstalling (installed manually)
 To uninstall our extension, run the following (from the root of your project in command line):
 ```
 php bin/magento module:disable Feedoptimise_CatalogExport
 composer remove Feedoptimise/CatalogExport
 php bin/magento setup:upgrade
-rm -r app/code/Feedoptimise/CatalogExport
 ```
+
+### Deleting extension files
 To delete our extension files from the server, run the following (from the root of your project in command line):
 ```
 rm -r app/code/Feedoptimise/CatalogExport
