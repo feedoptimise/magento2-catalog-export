@@ -2,7 +2,7 @@
   "name": "feedoptimise/magento2-catalog-export",
   "description": "Exports catalog data, from Magento2 stores, which is used to generate product feeds.",
   "type": "magento2-module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "require": {
 	"magento/magento-composer-installer": "*",
 	"composer/installers": "~1.0"
@@ -19,7 +19,7 @@
 	"map": [
 	  [
 		"src/*",
-		"app/code/Feedoptimise/CatalogExport/"
+		"Feedoptimise/CatalogExport/"
 	  ]
 	]
   }

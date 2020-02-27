@@ -16,7 +16,7 @@ There are a few things needed prior to installing this module:
 ### Installing with Composer (recommended)
 The first step is to add our repo to your composer.json, by running the following (from the root of your project in command line):
 ```
-composer config repositories.feedoptimise-magento2-catalog-export vcs git@bitbucket.org:feedoptimise/magento2-catalog-export.git
+composer config repositories.feedoptimise-magento2-catalog-export vcs git@github.com:feedoptimise/magento2-catalog-export.git
 composer require feedoptimise/magento2-catalog-export
 ```
 Now you can enable our module by running the following (from the root of your project in command line):
