@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Joe Yates (Feedoptimise)
+* @copyright Copyright (c) 2020 Feedoptimise (http://www.feedoptimise.com)
+* @package Feedoptimise_CatalogExport
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <feedoptimise_catalog_export>
+            <general>
+                <enable>1</enable>
+                <security_token></security_token>
+            </general>
+        </feedoptimise_catalog_export>
+    </default>
+</config>

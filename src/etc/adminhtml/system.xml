@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Joe Yates (Feedoptimise)
+* @copyright Copyright (c) 2020 Feedoptimise (http://www.feedoptimise.com)
+* @package Feedoptimise_CatalogExport
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="feedoptimise" translate="label" sortOrder="1000">
+            <label>Feedoptimise</label>
+        </tab>
+        <section id="feedoptimise_catalog_export" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Catalog Export</label>
+            <tab>feedoptimise</tab>
+            <resource>Feedoptimise_CatalogExport::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Configuration</label>
+
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Module Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="security_token" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Security Token</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

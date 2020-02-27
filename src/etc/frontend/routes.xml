@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Joe Yates (Feedoptimise)
+* @copyright Copyright (c) 2020 Feedoptimise (http://www.feedoptimise.com)
+* @package Feedoptimise_CatalogExport
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="standard">
+        <route id="feedoptimise" frontName="feedoptimise_catalog_export">
+            <module name="Feedoptimise_CatalogExport" />
+        </route>
+    </router>
+</config>
