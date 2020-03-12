@@ -136,7 +136,7 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 			{
 				$return['error'] = true;
 				$return['code'] = 400;
-				$return['error_msg'] = 'Product doesn\'t exist with entity_id: '.$_POST['store_id'];
+				$return['error_msg'] = 'Product doesn\'t exist with entity_id: '.$_POST['entity_id'];
 			}
 			else
 			{
@@ -160,8 +160,14 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 		$configurableAttributes = $_product->getTypeInstance(true)->getConfigurableAttributes($_product);
 		foreach($_children as $_child)
 		{
-			$_childProduct = $this->productRepository->getById($_child->getId());
-			$child = $this->getProductData($_childProduct);
+			try
+			{
+				$_childProduct = $this->productRepository->getById($_child->getId());
+				$child = $this->getProductData($_childProduct);
+			} catch(\Exception $e)
+			{
+				continue;
+			}
 
 			$urlParams = [];
 			foreach($configurableAttributes as $attribute)
@@ -285,17 +291,27 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 
 		foreach($collection->loadData() as $item)
 		{
-			$_product = $this->productRepository->getById($item->getId());
-			$product = $this->getProductData($_product);
+			try
+			{
+				$_product = $this->productRepository->getById($item->getId());
+				$product = $this->getProductData($_product);
 
-			// options/grouped options
-			if($_product->getTypeId() === "configurable")
+				// options/grouped options
+				if($_product->getTypeId() === "configurable")
+				{
+					$product['variants'] = $this->getProductOptions($_product);
+				}
+				else if($_product->getTypeId() === "grouped")
+				{
+					$product['variants'] = $this->getProductGroupedOptions($_product);
+				}
+			} catch(\Exception $e)
 			{
-				$product['variants'] = $this->getProductOptions($_product);
-			}
-			else if($_product->getTypeId() === "grouped")
-			{
-				$product['variants'] = $this->getProductGroupedOptions($_product);
+				return [
+					'error' => true,
+					'code' => 500,
+					'error_msg' => $e->getMessage()
+				];
 			}
 
 			return $product;
