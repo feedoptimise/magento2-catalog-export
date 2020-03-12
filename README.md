@@ -20,14 +20,14 @@ composer require feedoptimise/magento2-catalog-export
 ```
 Now you can enable our module by running the following (from the root of your project in command line):
 ```
-php bin/magento module:enable Feedoptimise_CatalogExport
-php bin/magento setup:upgrade
-php bin/magento setup:di:compile
-php bin/magento cache:flush
+bin/magento module:enable Feedoptimise_CatalogExport
+bin/magento setup:upgrade
+bin/magento setup:di:compile
+bin/magento cache:flush
 ```
 Then check the module has been enabled correctly, by running the following (from the root of your project in command line):
 ```
-php bin/magento module:status
+bin/magento module:status
 ```
 Once the module is installed, you should then login to the admin panel of your store and visit the following page:
 ```
@@ -65,15 +65,15 @@ app/
 
 Once the folder has been placed inside the **/app/code** directory, you can then run the following (from the root of your project in command line):
 ```
-php bin/magento module:enable Feedoptimise_CatalogExport
-php bin/magento setup:upgrade
-php bin/magento setup:di:compile
-php bin/magento cache:flush
+bin/magento module:enable Feedoptimise_CatalogExport
+bin/magento setup:upgrade
+bin/magento setup:di:compile
+bin/magento cache:flush
 ```
 
 Then check the module has been enabled correctly, by running the following (from the root of your project in command line):
 ```
-php bin/magento module:status
+bin/magento module:status
 ```
 
 Once the module is installed, you should then login to the admin panel of your store and visit the following page:
@@ -92,25 +92,25 @@ Once installed, we (Feedoptimise) will confirm it is working correctly and our s
 To update the module, run the following (from the root of your project in command line).
 ```
 composer update feedoptimise/magento2-catalog-export
-php -f bin/magento setup:upgrade
-php -f bin/magento setup:di:compile
-php -f bin/magento cache:flush
+bin/magento setup:upgrade
+bin/magento setup:di:compile
+bin/magento cache:flush
 ```
 
 ## Uninstalling (installed via composer)
 To uninstall our extension, run the following (from the root of your project in command line):
 ```
-php bin/magento module:disable Feedoptimise_CatalogExport
-php bin/magento setup:upgrade
+bin/magento module:disable Feedoptimise_CatalogExport
+bin/magento setup:upgrade
 composer remove feedoptimise/magento2-catalog-export
 ```
 
 ## Uninstalling (installed manually)
 To uninstall our extension, run the following (from the root of your project in command line):
 ```
-php bin/magento module:disable Feedoptimise_CatalogExport
+bin/magento module:disable Feedoptimise_CatalogExport
 composer remove Feedoptimise/CatalogExport
-php bin/magento setup:upgrade
+bin/magento setup:upgrade
 ```
 
 ## Author
