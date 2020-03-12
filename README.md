@@ -88,6 +88,15 @@ Security Token = <SECURITY_TOKEN_HERE>
 
 Once installed, we (Feedoptimise) will confirm it is working correctly and our system will begin extracting data for your product feed.
 
+## Updating (installed via composer)
+To update the module, run the following (from the root of your project in command line).
+```
+composer update feedoptimise/magento2-catalog-export
+php -f bin/magento setup:upgrade
+php -f bin/magento setup:di:compile
+php -f bin/magento cache:flush
+```
+
 ## Uninstalling (installed via composer)
 To uninstall our extension, run the following (from the root of your project in command line):
 ```
