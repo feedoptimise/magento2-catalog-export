@@ -42,7 +42,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		$result = $this->resultJsonFactory->create();
 		$data = [
 			'enabled' => $this->extensionSettings->getGeneralConfig('enable'),
-			'security_token' => ($this->extensionSettings->getGeneralConfig('license_key') !== null)
+			'security_token' => ($this->extensionSettings->getGeneralConfig('security_token') !== null)
 		];
 
 		return $result->setData($data);

@@ -6,15 +6,16 @@
  */
 
 namespace Feedoptimise\CatalogExport\Controller\Products;
-use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterface;
 
-class Index extends \Magento\Framework\App\Action\Action implements HttpPostActionInterface
+class Index extends \Magento\Framework\App\Action\Action
 {
 	/**
 	 * Framework Variables
+	 * @var \Magento\Framework\App\RequestInterface $requestInterface
 	 * @var \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
 	 * @var \Magento\Store\Model\StoreManagerInterface
 	 */
+	protected $requestInterface;
 	protected $resultJsonFactory;
 	protected $storeManager;
 	/**
@@ -39,6 +40,7 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 	/**
 	 * Framework Params
 	 * @param \Magento\Framework\App\Action\Context $context
+	 * @param \Magento\Framework\App\RequestInterface $requestInterface
 	 * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
 	 * @param \Magento\Store\Model\StoreManagerInterface $storeManager
 	 *
@@ -56,6 +58,7 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 	public function __construct(
 		// Framework Params
 		\Magento\Framework\App\Action\Context $context,
+		\Magento\Framework\App\RequestInterface $requestInterface,
 		\Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		// Extension Params
@@ -69,6 +72,7 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 	)
 	{
 		// Framework Variables
+		$this->requestInterface = $requestInterface;
 		$this->resultJsonFactory = $resultJsonFactory;
 		$this->storeManager = $storeManager;
 
@@ -90,20 +94,23 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 	 */
 	public function execute()
 	{
+		/** @var array $request */
+		$request = $this->requestInterface->getParams();
+
 		/** @var \Magento\Framework\Controller\Result\Json $result */
 		$result = $this->resultJsonFactory->create();
-		if(($settingsError = $this->extensionSettings->validateSettings()) !== true)
+		if(($settingsError = $this->extensionSettings->validateSettings($request)) !== true)
 		{
 			return $result->setData($settingsError);
 		}
-		else if(($storeError = $this->storeController->checkStore()) !== true)
+		else if(($storeError = $this->storeController->checkStore(@$request['store_id'])) !== true)
 		{
 			return $result->setData($storeError);
 		}
 		else
 		{
 			// set the current store
-			$this->storeController->setStore($_POST['store_id']);
+			$this->storeController->setStore($request['store_id']);
 
 			/** @var \Magento\Framework\DataObject[] $products */
 			$products = $this->getProducts();

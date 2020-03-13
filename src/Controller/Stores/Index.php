@@ -6,15 +6,16 @@
  */
 
 namespace Feedoptimise\CatalogExport\Controller\Stores;
-use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterface;
 
-class Index extends \Magento\Framework\App\Action\Action implements HttpPostActionInterface
+class Index extends \Magento\Framework\App\Action\Action
 {
 	/**
 	 * Framework Variables
+	 * @var \Magento\Framework\App\RequestInterface $requestInterface
 	 * @var \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
 	 * @var \Magento\Store\Model\StoreManagerInterface
 	 */
+	protected $requestInterface;
 	protected $resultJsonFactory;
 	protected $storeManager;
 	/**
@@ -26,17 +27,20 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 	public $baseImageUrl;
 	/**
 	 * @param \Magento\Framework\App\Action\Context $context
+	 * @param \Magento\Framework\App\RequestInterface $requestInterface
 	 * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
 	 * @param \Magento\Store\Model\StoreManagerInterface $storeManager
 	 * @param \Feedoptimise\CatalogExport\Helper\Settings $extensionSettings
 	 */
 	public function __construct(
 		\Magento\Framework\App\Action\Context $context,
+		\Magento\Framework\App\RequestInterface $requestInterface,
 		\Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
 		\Feedoptimise\CatalogExport\Helper\Settings $extensionSettings,
 		\Magento\Store\Model\StoreManagerInterface $storeManager
 	)
 	{
+		$this->requestInterface = $requestInterface;
 		$this->extensionSettings = $extensionSettings;
 		$this->resultJsonFactory = $resultJsonFactory;
 		$this->storeManager = $storeManager;
@@ -50,7 +54,7 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 	public function execute()
 	{
 		$result = $this->resultJsonFactory->create();
-		if(($settingsError = $this->extensionSettings->validateSettings()) !== true)
+		if(($settingsError = $this->extensionSettings->validateSettings($this->requestInterface->getParams())) !== true)
 		{
 			return $result->setData($settingsError);
 		}
@@ -111,11 +115,8 @@ class Index extends \Magento\Framework\App\Action\Action implements HttpPostActi
 	 *
 	 * @return array|boolean
 	 */
-	public function checkStore()
+	public function checkStore($storeId)
 	{
-		/** @var string $storeId */
-		$storeId = @$_POST['store_id'];
-
 		if(!$storeId)
 		{
 			return [

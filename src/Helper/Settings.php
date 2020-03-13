@@ -26,10 +26,8 @@ class Settings extends AbstractHelper
 		return $this->getConfigValue(self::XML_PATH_EXPORT .'general/'. $code, $storeId);
 	}
 
-	public function validateSettings()
+	public function validateSettings($request = [])
 	{
-		$_POST = json_decode(file_get_contents('php://input'), true);
-
 		if(!$this->getGeneralConfig('enable'))
 		{
 			return [
@@ -46,7 +44,7 @@ class Settings extends AbstractHelper
 				'error_msg' => 'Security token is empty (extension config)'
 			];
 		}
-		else if(!isset($_POST['security_token']))
+		else if(!isset($request['security_token']))
 		{
 			return [
 				'error' => true,
@@ -54,7 +52,7 @@ class Settings extends AbstractHelper
 				'error_msg' => 'Please specify a security_token'
 			];
 		}
-		else if($this->getGeneralConfig('security_token') !== $_POST['security_token'])
+		else if($this->getGeneralConfig('security_token') !== $request['security_token'])
 		{
 			return [
 				'error' => true,
