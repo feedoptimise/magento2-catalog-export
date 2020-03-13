@@ -113,7 +113,7 @@ class Index extends \Magento\Framework\App\Action\Action
 			$this->storeController->setStore($request['store_id']);
 
 			/** @var \Magento\Framework\DataObject[] $products */
-			$products = $this->getProducts();
+			$products = $this->getProducts($request);
 
 			return $result->setData([
 				'error' => false,
@@ -122,8 +122,8 @@ class Index extends \Magento\Framework\App\Action\Action
 					'total' => $this->getProductCount(),
 					'returned_total' => count($products),
 					'pagination' => [
-						'limit' => (isset($_POST['limit']) ? (int)$_POST['limit'] : 50),
-						'page' => (isset($_POST['page']) ? (int)$_POST['page'] : 1)
+						'limit' => (isset($request['limit']) ? (int)$request['limit'] : 50),
+						'page' => (isset($request['page']) ? (int)$request['page'] : 1)
 					],
 					'products' => $products
 				]
@@ -151,7 +151,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	 * @return \Magento\Framework\DataObject[]
 	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
-	protected function getProducts()
+	protected function getProducts($request)
 	{
 		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
 		$collection = $this->productCollectionFactory->create();
@@ -162,8 +162,8 @@ class Index extends \Magento\Framework\App\Action\Action
 
 		//echo "Total Count: ".$collection->count();
 
-		$collection->setPageSize((isset($_POST['limit']) ? (int)$_POST['limit'] : 50));
-		$collection->setCurPage((isset($_POST['page']) ? (int)$_POST['page'] : 1));
+		$collection->setPageSize((isset($request['limit']) ? (int)$request['limit'] : 50));
+		$collection->setCurPage((isset($request['page']) ? (int)$request['page'] : 1));
 
 		/** @var \Magento\Framework\DataObject[] $products */
 		$products = [];
