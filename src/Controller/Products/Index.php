@@ -23,10 +23,12 @@ class Index extends \Magento\Framework\App\Action\Action
 	 * @var \Feedoptimise\CatalogExport\Helper\Settings $extensionSettings
 	 * @var \Feedoptimise\CatalogExport\Controller\Stores\Index $storeController
 	 * @var \Feedoptimise\CatalogExport\Controller\Product\Index $productController
+	 * @var integer $storeId
 	 */
 	protected $extensionSettings;
 	protected $storeController;
 	protected $productController;
+	protected $storeId;
 	/**
 	 * Product Searching Variables
 	 * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
@@ -110,7 +112,8 @@ class Index extends \Magento\Framework\App\Action\Action
 		else
 		{
 			// set the current store
-			$this->storeController->setStore($request['store_id']);
+			//$this->storeController->setStore($request['store_id']);
+			$this->storeId = (int)$request['store_id'];
 
 			/** @var \Magento\Framework\DataObject[] $products */
 			$products = $this->getProducts($request);
@@ -140,6 +143,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	{
 		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
 		$collection = $this->productCollectionFactory->create();
+		$collection->addStoreFilter($this->storeId);
 		$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
 		$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
 		$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
@@ -155,12 +159,11 @@ class Index extends \Magento\Framework\App\Action\Action
 	{
 		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
 		$collection = $this->productCollectionFactory->create();
+		$collection->addStoreFilter($this->storeId);
 		$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
 		$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
 		$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
 		$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
-
-		//echo "Total Count: ".$collection->count();
 
 		$collection->setPageSize((isset($request['limit']) ? (int)$request['limit'] : 50));
 		$collection->setCurPage((isset($request['page']) ? (int)$request['page'] : 1));
