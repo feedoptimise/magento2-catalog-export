@@ -166,8 +166,16 @@ class Index extends \Magento\Framework\App\Action\Action
 	protected function getProductOptions($_product)
 	{
 		$return = [];
+		$attrArray = [];
+
 		$_children = $_product->getTypeInstance()->getUsedProducts($_product);
 		$configurableAttributes = $_product->getTypeInstance(true)->getConfigurableAttributes($_product);
+		$usedConfigurableAttributes = $_product->getTypeInstance(true)->getConfigurableAttributesAsArray($_product);
+
+		foreach($usedConfigurableAttributes as $confAttr)
+			foreach($confAttr['values'] as $confAttrValue)
+				$attrArray[$confAttr['attribute_code']][$confAttrValue['label']] = $confAttrValue['value_index'];
+
 		foreach($_children as $_child)
 		{
 			try
@@ -180,15 +188,34 @@ class Index extends \Magento\Framework\App\Action\Action
 			}
 
 			$urlParams = [];
+			$child['attributes'] = [];
 			foreach($configurableAttributes as $attribute)
 			{
 				$attrValue = $_childProduct->getResource()->getAttribute($attribute->getProductAttribute()->getAttributeCode())->getFrontend();
+				$attrCode  = $attribute->getProductAttribute()->getAttributeCode();
+				$attrLabel = $attribute->getProductAttribute()->getStoreLabel();
 				$value = $attrValue->getValue($_childProduct);
 
-				foreach($attrValue->getSelectOptions() as $attrOption)
-					if($attrOption['label'] == $value)
-						$urlParams[] = $attribute["attribute_id"].'='.$attrOption['value'];
+				if(array_key_exists($attrCode, $attrArray))
+				{
+					foreach ($attrArray[$attrCode] as $kArr => $vArr)
+					{
+						if ((string)$kArr === (string)$value)
+						{
+							$child['attributes'][] = [
+								'attr_id' => $attribute["attribute_id"],
+								'code' => $attrCode,
+								'label' => $attrLabel,
+								'value' => $value,
+								'opt_id' => $vArr
+							];
+
+							$urlParams[] = $attribute["id"] . '=' . $vArr;
+						}
+					}
+				}
 			}
+
 			if(count($urlParams))
 				// append the pre-selection params to the product url
 				$child['url'] = $_product->getProductUrl().'#'.implode('&', $urlParams);
