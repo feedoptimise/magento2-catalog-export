@@ -210,7 +210,7 @@ class Index extends \Magento\Framework\App\Action\Action
 								'opt_id' => $vArr
 							];
 
-							$urlParams[] = $attribute["id"] . '=' . $vArr;
+							$urlParams[] = $attribute["attribute_id"] . '=' . $vArr;
 						}
 					}
 				}
