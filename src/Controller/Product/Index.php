@@ -254,7 +254,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		$attributes = $_product->getAttributes();
 		foreach($attributes as $attribute)
 		{
-			if(!isset($product[$attribute->getData('attribute_code')])) continue;
+			if(!isset($product[$attribute->getData('attribute_code')]) || $attribute->getData('attribute_code') === 'quantity_and_stock_status') continue;
 			if ($attribute->usesSource()) {
 				$product[$attribute->getData('attribute_code')] = $attribute->getSource()->getOptionText($_product->getData($attribute->getData('attribute_code')));
 			}
