@@ -173,7 +173,7 @@ class Index extends \Magento\Framework\App\Action\Action
 
 		foreach($collection->loadData() as $item)
 			// use the product controller to extract each product
-			$products[] = $this->productController->getProduct($item->getId());
+			$products[] = $this->productController->getProduct($item->getId(), true);
 
 		return $products;
 	}

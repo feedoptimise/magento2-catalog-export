@@ -14,10 +14,12 @@ class Index extends \Magento\Framework\App\Action\Action
 	 * @var \Magento\Framework\App\RequestInterface $requestInterface
 	 * @var \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
 	 * @var \Magento\Store\Model\StoreManagerInterface
+	 * @var \Magento\Directory\Model\Currency $currencyModel
 	 */
 	protected $requestInterface;
 	protected $resultJsonFactory;
 	protected $storeManager;
+	protected $currencyModel;
 	/**
 	 * Extension Variables
 	 * @var \Feedoptimise\CatalogExport\Helper\Settings $extensionSettings
@@ -37,13 +39,16 @@ class Index extends \Magento\Framework\App\Action\Action
 		\Magento\Framework\App\RequestInterface $requestInterface,
 		\Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
 		\Feedoptimise\CatalogExport\Helper\Settings $extensionSettings,
-		\Magento\Store\Model\StoreManagerInterface $storeManager
+		\Magento\Store\Model\StoreManagerInterface $storeManager,
+		\Magento\Directory\Model\Currency $currencyModel
 	)
 	{
 		$this->requestInterface = $requestInterface;
 		$this->extensionSettings = $extensionSettings;
 		$this->resultJsonFactory = $resultJsonFactory;
 		$this->storeManager = $storeManager;
+		$this->currencyModel = $currencyModel;
+
 		return parent::__construct($context);
 	}
 	/**
@@ -74,7 +79,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	/**
 	 * Get stores method
 	 *
-	 * @return \Magento\Framework\Controller\ResultInterface
+	 * @return array
 	 */
 	private function getStores()
 	{
@@ -84,15 +89,38 @@ class Index extends \Magento\Framework\App\Action\Action
 		$options = [];
 
 		foreach ($storeManagerDataList as $key => $value) {
+			$currencies = $this->getStoreCurrencies($value->getStoreId());
 			$options[] = [
 				'id' => $value->getStoreId(),
-				'code' => $value->getCode(),
+				'store_code' => $value->getCode(),
 				'name' => $value->getFrontendName(),
-				'homepage' => $value->getBaseUrl()
+				'homepage' => $value->getBaseUrl(),
+				'currencies' => $currencies
 			];
 		}
 
 		return $options;
+	}
+	/**
+	 * Get store currencies method
+	 *
+	 * @return array
+	 */
+	private function getStoreCurrencies($storeId)
+	{
+		$this->storeManager->setCurrentStore($storeId);
+		$baseCurrency = $this->storeManager->getStore()->getBaseCurrencyCode();
+		$allCurrencies = $this->storeManager->getStore()->getAvailableCurrencyCodes(true);
+
+		$return = [
+			'base_currency' => $this->storeManager->getStore()->getBaseCurrencyCode(),
+			'rates' => []
+		];
+
+		foreach($allCurrencies as $currency)
+			$return['rates'][$currency] = $this->storeManager->getStore()->getBaseCurrency()->getRate($currency);
+
+		return $return;
 	}
 	/**
 	 * Set store method

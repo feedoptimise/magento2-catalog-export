@@ -30,18 +30,18 @@ class Index extends \Magento\Framework\App\Action\Action
 	/**
 	 * Product Searching Variables
 	 * @var \Magento\Catalog\Model\CategoryRepository $categoryRepository
+	 * @var \Magento\Catalog\Model\ResourceModel\Category\Tree $categoryTree
 	 * @var \Magento\Catalog\Model\ProductRepository $productRepository
 	 * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
 	 * @var \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus
 	 * @var \Magento\Catalog\Model\Product\Visibility $productVisibility
-	 * @var \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
 	 */
 	protected $categoryRepository;
+	protected $categoryTree;
 	protected $productRepository;
 	protected $productCollectionFactory;
 	protected $productStatus;
 	protected $productVisibility;
-	protected $stockItemRepository;
 
 	/**
 	 * Framework Params
@@ -60,7 +60,6 @@ class Index extends \Magento\Framework\App\Action\Action
 	 * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
 	 * @param \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus
 	 * @param \Magento\Catalog\Model\Product\Visibility $productVisibility
-	 * @param \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
 	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	public function __construct(
@@ -74,11 +73,11 @@ class Index extends \Magento\Framework\App\Action\Action
 		\Feedoptimise\CatalogExport\Controller\Stores\Index $storeController,
 		// Product Searching Params
 		\Magento\Catalog\Model\CategoryRepository $categoryRepository,
+		\Magento\Catalog\Model\ResourceModel\Category\Tree $categoryTree,
 		\Magento\Catalog\Model\ProductRepository $productRepository,
 		\Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
 		\Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus,
-		\Magento\Catalog\Model\Product\Visibility $productVisibility,
-		\Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
+		\Magento\Catalog\Model\Product\Visibility $productVisibility
 	)
 	{
 		// Framework Variables
@@ -92,11 +91,11 @@ class Index extends \Magento\Framework\App\Action\Action
 
 		// Product Searching Params
 		$this->categoryRepository = $categoryRepository;
+		$this->categoryTree = $categoryTree;
 		$this->productRepository = $productRepository;
 		$this->productCollectionFactory = $productCollectionFactory;
 		$this->productStatus = $productStatus;
 		$this->productVisibility = $productVisibility;
-		$this->stockItemRepository = $stockItemRepository;
 
 		return parent::__construct($context);
 	}
@@ -221,6 +220,7 @@ class Index extends \Magento\Framework\App\Action\Action
 				$child['url'] = $_product->getProductUrl().'#'.implode('&', $urlParams);
 
 			$return[] = $child;
+			$_childProduct->clearInstance();
 		}
 		return $return;
 	}
@@ -239,6 +239,7 @@ class Index extends \Magento\Framework\App\Action\Action
 			$child = $this->getProductData($_childProduct);
 			$child['url'] = $_product->getProductUrl();
 			$return[] = $child;
+			$_childProduct->clearInstance();
 		}
 		return $return;
 	}
@@ -263,6 +264,16 @@ class Index extends \Magento\Framework\App\Action\Action
 			}
 		}
 
+		$product['options'] = [];
+		foreach ($_product->getOptions() as $o) {
+			$_option = $o->getData();
+			$_option['values'] = [];
+			foreach ($o->getValues() as $value) {
+				$_option['values'][] = $value->getData();
+			}
+			$product['options'][] = $_option;
+		}
+
 		$stockItem = $_product->getExtensionAttributes()->getStockItem();
 		$product['stock'] = [
 			'stock_id' => $stockItem->getData('stock_id'),
@@ -282,10 +293,54 @@ class Index extends \Magento\Framework\App\Action\Action
 		$product['final_price'] = $_product->getFinalPrice();
 
 		// categories
-		if ($categoryIds = $_product->getCustomAttribute('category_ids')) {
-			foreach ($categoryIds->getValue() as $categoryId) {
-				$product['categories'][] = $this->categoryRepository->get($categoryId)->getName();
+		if ($categoryIds = $_product->getCategoryIds())
+		{
+			$product['categories'] = [];
+			$_category_ids = [];
+			$_categoryPaths = [];
+			$_categoryNames = [];
+			$_categoryPathNames = [];
+
+			// get the category paths
+			foreach ($categoryIds as $categoryId)
+			{
+				$category = $this->categoryRepository->get($categoryId);
+				$_categoryNames[$category->getId()] = $category->getName();
+				$_categoryPaths[] = $category->getPath();
+				$category->clearInstance();
 			}
+
+			// convert category id's to category names
+			foreach($_categoryPaths as $categoryPath)
+			{
+				$splitPath = explode("/", $categoryPath);
+				$_pathNames = [];
+				$category_ids = [];
+				foreach($splitPath as $categoryId)
+					if (isset($_categoryNames[$categoryId]))
+					{
+						$category_ids[] = $categoryId;
+						$_pathNames[] = $_categoryNames[$categoryId];
+					}
+				$category_ids = implode(" > ", $category_ids);
+				$_categoryPathNames[$category_ids] = implode(" > ", $_pathNames);
+			}
+
+			// remove any duplicates
+			foreach($_categoryPathNames as $index => $pathNames)
+			{
+				$splitPath = explode(" > ", $pathNames);
+				array_pop($splitPath);
+				if(count($splitPath) > 0)
+				{
+					$catIndex = array_search(implode(' > ', $splitPath), $_categoryPathNames);
+					if ($catIndex !== -1)
+						unset($_categoryPathNames[$catIndex]);
+				}
+			}
+
+			$product['category_ids'] = array_keys($_categoryPathNames);
+			$product['categories'] = array_values($_categoryPathNames);
 		}
 
 		// images
@@ -310,40 +365,74 @@ class Index extends \Magento\Framework\App\Action\Action
 	 * @return array|boolean
 	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
-	public function getProduct($entity_id)
+	public function getProduct($entity_id, $query = true)
 	{
-		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-		$collection = $this->productCollectionFactory->create();
-		$collection->addStoreFilter($this->storeId);
-		$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
-		$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
-		$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
-		$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
-		$collection->addAttributeToFilter('entity_id', $entity_id);
-		$collection->addMediaGalleryData();
-		$collection->addFinalPrice();
+		if($query)
+		{
+			/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+			$collection = $this->productCollectionFactory->create();
+			$collection->addStoreFilter($this->storeId);
+			$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
+			$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
+			$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
+			$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
+			$collection->addAttributeToFilter('entity_id', $entity_id);
+			$collection->addMediaGalleryData();
+			$collection->addFinalPrice();
 
-		// limit to 1 product
-		$collection->setPageSize(1);
-		$collection->setCurPage(1);
+			// limit to 1 product
+			$collection->setPageSize(1);
+			$collection->setCurPage(1);
 
-		foreach($collection->loadData() as $item)
+			foreach ($collection->loadData() as $item)
+			{
+				try
+				{
+					$_product = $this->productRepository->getById($item->getId());
+					$product = $this->getProductData($_product);
+
+					// options/grouped options
+					if ($_product->getTypeId() === "configurable")
+					{
+						$product['variants'] = $this->getProductOptions($_product);
+					}
+					else if ($_product->getTypeId() === "grouped")
+					{
+						$product['variants'] = $this->getProductGroupedOptions($_product);
+					}
+
+					$_product->clearInstance();
+				} catch (\Exception $e)
+				{
+					return [
+						'error' => true,
+						'code' => 500,
+						'error_msg' => $e->getMessage()
+					];
+				}
+
+				return $product;
+			}
+		}
+		else
 		{
 			try
 			{
-				$_product = $this->productRepository->getById($item->getId());
+				$_product = $this->productRepository->getById($entity_id);
 				$product = $this->getProductData($_product);
 
 				// options/grouped options
-				if($_product->getTypeId() === "configurable")
+				if ($_product->getTypeId() === "configurable")
 				{
 					$product['variants'] = $this->getProductOptions($_product);
 				}
-				else if($_product->getTypeId() === "grouped")
+				else if ($_product->getTypeId() === "grouped")
 				{
 					$product['variants'] = $this->getProductGroupedOptions($_product);
 				}
-			} catch(\Exception $e)
+
+				$_product->clearInstance();
+			} catch (\Exception $e)
 			{
 				return [
 					'error' => true,
