@@ -1,3 +1,6 @@
+### 1.2.2 (2020-04-15)
+  1. Fixed an issue with product options
+
 ### 1.2.1 (2020-04-03)
   1. Fixed an issue with product attribute: "quantity_and_stock_status"
 

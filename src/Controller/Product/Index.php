@@ -252,10 +252,11 @@ class Index extends \Magento\Framework\App\Action\Action
 	{
 		$product = $_product->getData();
 		$attributes = $_product->getAttributes();
-		foreach($attributes as $attribute)
+		foreach ($attributes as $attribute)
 		{
-			if(!isset($product[$attribute->getData('attribute_code')]) || $attribute->getData('attribute_code') === 'quantity_and_stock_status') continue;
-			if ($attribute->usesSource()) {
+			if (!isset($product[$attribute->getData('attribute_code')]) || $attribute->getData('attribute_code') === 'quantity_and_stock_status') continue;
+			if ($attribute->usesSource())
+			{
 				$product[$attribute->getData('attribute_code')] = $attribute->getSource()->getOptionText($_product->getData($attribute->getData('attribute_code')));
 			}
 			else
@@ -264,27 +265,41 @@ class Index extends \Magento\Framework\App\Action\Action
 			}
 		}
 
-		$product['options'] = [];
-		foreach ($_product->getOptions() as $o) {
-			$_option = $o->getData();
-			$_option['values'] = [];
-			foreach ($o->getValues() as $value) {
-				$_option['values'][] = $value->getData();
+		try
+		{
+			$product['options'] = [];
+			$_options = @$_product->getOptions();
+			if (is_array($_options) || $_options instanceof Traversable)
+			{
+				foreach ($_options as $o)
+				{
+					$_option = $o->getData();
+					$_option['values'] = [];
+					foreach ($o->getValues() as $value)
+					{
+						$_option['values'][] = $value->getData();
+					}
+					$product['options'][] = $_option;
+				}
 			}
-			$product['options'][] = $_option;
-		}
+		} catch (\Exception $e)
+		{}
 
-		$stockItem = $_product->getExtensionAttributes()->getStockItem();
-		$product['stock'] = [
-			'stock_id' => $stockItem->getData('stock_id'),
-			'qty' => $stockItem->getData('qty'),
-			'min_sale_qty' => $stockItem->getData('min_sale_qty'),
-			'max_sale_qty' => $stockItem->getData('max_sale_qty'),
-			'is_in_stock' => $stockItem->getData('is_in_stock'),
-			'stock_id' => $stockItem->getData('stock_id'),
-			'manage_stock' => $stockItem->getData('manage_stock'),
-			'backorders' => $stockItem->getData('backorders')
-		];
+		try
+		{
+			$stockItem = $_product->getExtensionAttributes()->getStockItem();
+			$product['stock'] = [
+				'stock_id' => $stockItem->getData('stock_id'),
+				'qty' => $stockItem->getData('qty'),
+				'min_sale_qty' => $stockItem->getData('min_sale_qty'),
+				'max_sale_qty' => $stockItem->getData('max_sale_qty'),
+				'is_in_stock' => $stockItem->getData('is_in_stock'),
+				'stock_id' => $stockItem->getData('stock_id'),
+				'manage_stock' => $stockItem->getData('manage_stock'),
+				'backorders' => $stockItem->getData('backorders')
+			];
+		} catch (\Exception $e)
+		{}
 
 		$product['url'] = $_product->getProductUrl();
 		$product['image'] = $this->storeController->baseImageUrl.$_product->getImage();
