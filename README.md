@@ -12,6 +12,11 @@ There are a few things needed prior to installing this module:
 - Magento2 Store Setup
 - PHP 7+ installed
 ```
+### !! BACKUP !!
+
+**Make sure to backup your Magento store before running the steps below.** 
+
+*Our plugin has been tested across lots of installations but there could be some custom/bespoke changes in your Magento code or other unexpected scenarios which can cause your Magento to crash during or after the installation thus it's strongly advised to have a backup in place so you can easily restore should some issues arise.*
 
 ## Installing via Composer (recommended)
 The first step is to add our repo to your composer.json, by running the following (from the root of your project in command line):
