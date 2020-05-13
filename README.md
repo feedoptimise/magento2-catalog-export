@@ -118,10 +118,6 @@ composer remove Feedoptimise/CatalogExport
 bin/magento setup:upgrade
 ```
 
-## Author
-
-* **Joe Yates (Feedoptimise) ** - https://www.feedoptimise.com
-
 ## License
 
 Usage is subject to permission.
