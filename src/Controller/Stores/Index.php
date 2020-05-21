@@ -130,6 +130,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	public function setStore($storeId)
 	{
 		// set the current store
+        $storeId = (int) $storeId;
 		$this->storeManager->setCurrentStore($storeId);
 
 		// set the store base image url

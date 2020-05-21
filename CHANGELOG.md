@@ -1,3 +1,6 @@
+### 1.2.3 (2020-05-21)
+  1. Fixed `setCurrentStore` not being triggered
+  
 ### 1.2.2 (2020-04-15)
   1. Fixed an issue with product options
 

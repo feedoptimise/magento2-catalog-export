@@ -112,7 +112,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		else
 		{
 			// set the current store
-			//$this->storeController->setStore($request['store_id']);
+			$this->storeController->setStore($request['store_id']);
 			$this->storeId = (int)$request['store_id'];
 
 			/** @var \Magento\Framework\DataObject[] $products */
