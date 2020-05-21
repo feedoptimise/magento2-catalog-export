@@ -1,3 +1,6 @@
+### 1.2.4 (2020-05-21)
+  1. Version increase
+  
 ### 1.2.3 (2020-05-21)
   1. Fixed `setCurrentStore` not being triggered
   
