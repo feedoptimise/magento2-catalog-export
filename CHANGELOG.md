@@ -1,3 +1,7 @@
+### 1.2.5 (2020-06-01)
+  1. Added 'debug' param to see noticed
+  2. Added catch errors
+
 ### 1.2.4 (2020-05-21)
   1. Version increase
   

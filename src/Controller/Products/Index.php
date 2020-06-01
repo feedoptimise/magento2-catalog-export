@@ -99,39 +99,65 @@ class Index extends \Magento\Framework\App\Action\Action
 		/** @var array $request */
 		$request = $this->requestInterface->getParams();
 
-		/** @var \Magento\Framework\Controller\Result\Json $result */
-		$result = $this->resultJsonFactory->create();
-		if(($settingsError = $this->extensionSettings->validateSettings($request)) !== true)
-		{
-			return $result->setData($settingsError);
-		}
-		else if(($storeError = $this->storeController->checkStore(@$request['store_id'])) !== true)
-		{
-			return $result->setData($storeError);
-		}
-		else
-		{
-			// set the current store
-			$this->storeController->setStore($request['store_id']);
-			$this->storeId = (int)$request['store_id'];
+		try {
+			if(@$request['debug'] == 'true')
+			{
+				error_reporting(E_ALL);
+				ini_set('display_errors', 1);
+			}
 
-			/** @var \Magento\Framework\DataObject[] $products */
-			$products = $this->getProducts($request);
+			/** @var \Magento\Framework\Controller\Result\Json $result */
+			$result = $this->resultJsonFactory->create();
+			if(($settingsError = $this->extensionSettings->validateSettings($request)) !== true)
+			{
+				return $result->setData($settingsError);
+			}
+			else if(($storeError = $this->storeController->checkStore(@$request['store_id'])) !== true)
+			{
+				return $result->setData($storeError);
+			}
+			else
+			{
+				// set the current store
+				$this->storeController->setStore($request['store_id']);
+				$this->storeId = (int)$request['store_id'];
 
-			return $result->setData([
-				'error' => false,
-				'code' => 200,
-				'payload' => [
-					'total' => $this->getProductCount(),
-					'returned_total' => count($products),
-					'pagination' => [
-						'limit' => (isset($request['limit']) ? (int)$request['limit'] : 50),
-						'page' => (isset($request['page']) ? (int)$request['page'] : 1)
-					],
-					'products' => $products
-				]
+				/** @var \Magento\Framework\DataObject[] $products */
+				$products = $this->getProducts($request);
+
+				return $result->setData([
+					'error' => false,
+					'code' => 200,
+					'payload' => [
+						'total' => $this->getProductCount(),
+						'returned_total' => count($products),
+						'pagination' => [
+							'limit' => (isset($request['limit']) ? (int)$request['limit'] : 50),
+							'page' => (isset($request['page']) ? (int)$request['page'] : 1)
+						],
+						'products' => $products
+					]
+				]);
+			}
+		}
+		catch (\Throwable $e) {
+			$result = $this->resultJsonFactory->create();
+
+			$result->setData([
+				'error' => true,
+				'code' => 500,
+				'error_msg' => $e->getMessage()
+			]);
+		} catch (\Exception $e) {
+			$result = $this->resultJsonFactory->create();
+
+			$result->setData([
+				'error' => true,
+				'code' => 500,
+				'error_msg' => $e->getMessage()
 			]);
 		}
+
 	}
 
 	/**

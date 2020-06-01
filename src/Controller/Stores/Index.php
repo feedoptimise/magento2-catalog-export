@@ -58,21 +58,48 @@ class Index extends \Magento\Framework\App\Action\Action
 	 */
 	public function execute()
 	{
-		$result = $this->resultJsonFactory->create();
-		if(($settingsError = $this->extensionSettings->validateSettings($this->requestInterface->getParams())) !== true)
-		{
-			return $result->setData($settingsError);
+		try {
+
+			$request = $this->requestInterface->getParams();
+			if(@$request['debug'] == 'true')
+			{
+				error_reporting(E_ALL);
+				ini_set('display_errors', 1);
+			}
+
+			$result = $this->resultJsonFactory->create();
+			if(($settingsError = $this->extensionSettings->validateSettings($this->requestInterface->getParams())) !== true)
+			{
+				return $result->setData($settingsError);
+			}
+			else
+			{
+				$stores = $this->getStores();
+				return $result->setData([
+					'error' => false,
+					'code' => 200,
+					'payload' => [
+						'total' => count($stores),
+						'stores' => $stores
+					]
+				]);
+			}
 		}
-		else
-		{
-			$stores = $this->getStores();
-			return $result->setData([
-				'error' => false,
-				'code' => 200,
-				'payload' => [
-					'total' => count($stores),
-					'stores' => $stores
-				]
+		catch (\Throwable $e) {
+			$result = $this->resultJsonFactory->create();
+
+			$result->setData([
+				'error' => true,
+				'code' => 500,
+				'error_msg' => $e->getMessage()
+			]);
+		} catch (\Exception $e) {
+			$result = $this->resultJsonFactory->create();
+
+			$result->setData([
+				'error' => true,
+				'code' => 500,
+				'error_msg' => $e->getMessage()
 			]);
 		}
 	}

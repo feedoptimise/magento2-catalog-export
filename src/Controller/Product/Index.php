@@ -108,53 +108,78 @@ class Index extends \Magento\Framework\App\Action\Action
 		/** @var array $request */
 		$request = $this->requestInterface->getParams();
 
-		/** @var \Magento\Framework\Controller\Result\Json $result */
-		$result = $this->resultJsonFactory->create();
-		if(($settingsError = $this->extensionSettings->validateSettings($request)) !== true)
-		{
-			return $result->setData($settingsError);
-		}
-		else if(($storeError = $this->storeController->checkStore(@$request['store_id'])) !== true)
-		{
-			return $result->setData($storeError);
-		}
-		else if(!isset($request['entity_id']))
-		{
-			return $result->setData([
-				'error' => true,
-				'code' => 400,
-				'error_msg' => 'Please specify an entity_id'
-			]);
-		}
-		else
-		{
-			// set the current store
-			//$this->storeController->setStore($request['store_id']);
-			$this->storeId = (int)$request['store_id'];
-
-			/** @var \Magento\Framework\DataObject[] $product */
-			$product = $this->getProduct($request['entity_id']);
-
-			/** @var array $return */
-			$return = [
-				'error' => false,
-				'code' => 200
-			];
-
-			if(!$product)
+		try {
+			if(@$request['debug'] == 'true')
 			{
-				$return['error'] = true;
-				$return['code'] = 400;
-				$return['error_msg'] = 'Product doesn\'t exist with entity_id: '.$request['entity_id'];
+				error_reporting(E_ALL);
+				ini_set('display_errors', 1);
+			}
+
+			/** @var \Magento\Framework\Controller\Result\Json $result */
+			$result = $this->resultJsonFactory->create();
+			if(($settingsError = $this->extensionSettings->validateSettings($request)) !== true)
+			{
+				return $result->setData($settingsError);
+			}
+			else if(($storeError = $this->storeController->checkStore(@$request['store_id'])) !== true)
+			{
+				return $result->setData($storeError);
+			}
+			else if(!isset($request['entity_id']))
+			{
+				return $result->setData([
+					'error' => true,
+					'code' => 400,
+					'error_msg' => 'Please specify an entity_id'
+				]);
 			}
 			else
 			{
-				$return['payload'] = [
-					'product' => $product
-				];
-			}
+				// set the current store
+				//$this->storeController->setStore($request['store_id']);
+				$this->storeId = (int)$request['store_id'];
 
-			return $result->setData($return);
+				/** @var \Magento\Framework\DataObject[] $product */
+				$product = $this->getProduct($request['entity_id']);
+
+				/** @var array $return */
+				$return = [
+					'error' => false,
+					'code' => 200
+				];
+
+				if(!$product)
+				{
+					$return['error'] = true;
+					$return['code'] = 400;
+					$return['error_msg'] = 'Product doesn\'t exist with entity_id: '.$request['entity_id'];
+				}
+				else
+				{
+					$return['payload'] = [
+						'product' => $product
+					];
+				}
+
+				return $result->setData($return);
+			}
+		}
+		catch (\Throwable $e) {
+			$result = $this->resultJsonFactory->create();
+
+			$result->setData([
+				'error' => true,
+				'code' => 500,
+				'error_msg' => $e->getMessage()
+			]);
+		} catch (\Exception $e) {
+			$result = $this->resultJsonFactory->create();
+
+			$result->setData([
+				'error' => true,
+				'code' => 500,
+				'error_msg' => $e->getMessage()
+			]);
 		}
 	}
 	/**
