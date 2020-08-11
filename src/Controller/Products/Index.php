@@ -104,7 +104,18 @@ class Index extends \Magento\Framework\App\Action\Action
 			{
 				error_reporting(E_ALL);
 				ini_set('display_errors', 1);
+
+				register_shutdown_function( "feedoptimise_fatal_handler_products" );
 			}
+			if(isset($request['max_execution_time']))
+			{
+				ini_set('max_execution_time', (int)$request['max_execution_time']);
+			}
+			if(isset($request['memory_limit']))
+			{
+				ini_set('memory_limit', ((int)$request['memory_limit']).'M');
+			}
+
 
 			/** @var \Magento\Framework\Controller\Result\Json $result */
 			$result = $this->resultJsonFactory->create();
@@ -131,6 +142,7 @@ class Index extends \Magento\Framework\App\Action\Action
 					'payload' => [
 						'total' => $this->getProductCount(),
 						'returned_total' => count($products),
+						'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
 						'pagination' => [
 							'limit' => (isset($request['limit']) ? (int)$request['limit'] : 50),
 							'page' => (isset($request['page']) ? (int)$request['page'] : 1)
@@ -146,6 +158,7 @@ class Index extends \Magento\Framework\App\Action\Action
 			$result->setData([
 				'error' => true,
 				'code' => 500,
+				'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
 				'error_msg' => $e->getMessage()
 			]);
 		} catch (\Exception $e) {
@@ -154,6 +167,7 @@ class Index extends \Magento\Framework\App\Action\Action
 			$result->setData([
 				'error' => true,
 				'code' => 500,
+				'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
 				'error_msg' => $e->getMessage()
 			]);
 		}
@@ -203,4 +217,10 @@ class Index extends \Magento\Framework\App\Action\Action
 
 		return $products;
 	}
+}
+
+function feedoptimise_fatal_handler_products()
+{
+	echo json_encode(error_get_last(), JSON_PRETTY_PRINT);
+	die;
 }

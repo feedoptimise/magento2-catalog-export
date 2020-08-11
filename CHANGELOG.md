@@ -1,3 +1,7 @@
+### 1.2.7 (2020-08-11)
+  1. Added more debug functions
+  2. Added memory limit set
+
 ### 1.2.5 (2020-06-01)
   1. Added 'debug' param to see noticed
   2. Added catch errors

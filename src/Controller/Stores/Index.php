@@ -65,6 +65,32 @@ class Index extends \Magento\Framework\App\Action\Action
 			{
 				error_reporting(E_ALL);
 				ini_set('display_errors', 1);
+				register_shutdown_function( "feedoptimise_fatal_handler_stores" );
+			}
+			if(@$request['phpinfo'] == 'true')
+			{
+				phpinfo();
+				die;
+			}
+			if(@$request['meminfo'] == 'true')
+			{
+				$result = $this->resultJsonFactory->create();
+				$meminfo = array();
+				if(file_exists("/proc/meminfo"))
+				{
+					$data = explode("\n", file_get_contents("/proc/meminfo"));
+					foreach ($data as $line) {
+						list($key, $val) = explode(":", $line);
+						$meminfo[$key] = trim($val);
+					}
+				}
+				return $result->setData([
+					'error' => false,
+					'code' => 200,
+					'payload' => [
+						'meminfo' => $meminfo,
+					]
+				]);
 			}
 
 			$result = $this->resultJsonFactory->create();
@@ -196,4 +222,11 @@ class Index extends \Magento\Framework\App\Action\Action
 			];
 		}
 	}
+}
+
+
+function feedoptimise_fatal_handler_stores()
+{
+	echo json_encode(error_get_last(), JSON_PRETTY_PRINT);
+	die;
 }
