@@ -1,3 +1,6 @@
+### 1.2.8 (2020-08-17)
+  1. Build version fix
+  
 ### 1.2.7 (2020-08-11)
   1. Added more debug functions
   2. Added memory limit set
