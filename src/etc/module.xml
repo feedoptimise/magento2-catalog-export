@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!--
 /**
-* @author Joe Yates (Feedoptimise)
-* @copyright Copyright (c) 2020 Feedoptimise (http://www.feedoptimise.com)
+* @author Feedoptimise
+* @copyright Copyright (c) 2020 Feedoptimise (https://www.feedoptimise.com)
 * @package Feedoptimise_CatalogExport
 */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/Module/etc/module.xsd">
-    <module name="Feedoptimise_CatalogExport" setup_version="1.2.8"></module>
+    <module name="Feedoptimise_CatalogExport" setup_version="1.2.9"></module>
 </config>

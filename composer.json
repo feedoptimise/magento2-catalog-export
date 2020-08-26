@@ -2,17 +2,16 @@
   "name": "feedoptimise/magento2-catalog-export",
   "description": "Exports catalog data, from Magento2 stores, which is used to generate product feeds.",
   "type": "magento2-module",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "require": {
 	"php": "7.*"
   },
   "authors": [
-	{
-	  "name": "Joe Yates",
-	  "email": "joe@feedoptimise.com",
-	  "homepage": "https://www.feedoptimise.com/",
-	  "role": "Developer"
-	}
+	  {
+		  "name": "Feedoptimise",
+		  "homepage": "https://www.feedoptimise.com/",
+		  "role": "Developer"
+	  }
   ],
   "autoload": {
 	"files": [

@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Joe Yates (Feedoptimise)
+ * @author Feedoptimise
  * @copyright Copyright (c) 2020 Feedoptimise (http://www.feedoptimise.com)
  * @package Feedoptimise_CatalogExport
  */
@@ -358,10 +358,12 @@ class Index extends \Magento\Framework\App\Action\Action
 			// get the category paths
 			foreach ($categoryIds as $categoryId)
 			{
-				$category = $this->categoryRepository->get($categoryId);
-				$_categoryNames[$category->getId()] = $category->getName();
-				$_categoryPaths[] = $category->getPath();
-				$category->clearInstance();
+			    try {
+                    $category = $this->categoryRepository->get($categoryId);
+                    $_categoryNames[$category->getId()] = $category->getName();
+                    $_categoryPaths[] = $category->getPath();
+                    $category->clearInstance();
+                } catch(\Exception $e){}
 			}
 
 			// convert category id's to category names

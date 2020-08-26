@@ -1,7 +1,7 @@
 <?php
 /**
- * @author Joe Yates (Feedoptimise)
- * @copyright Copyright (c) 2020 Feedoptimise (http://www.feedoptimise.com)
+ * @author Feedoptimise
+ * @copyright Copyright (c) 2020 Feedoptimise (https://www.feedoptimise.com)
  * @package Feedoptimise_CatalogExport
  */
 
