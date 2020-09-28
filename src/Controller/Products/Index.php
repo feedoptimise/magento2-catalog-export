@@ -100,7 +100,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		$request = $this->requestInterface->getParams();
 
 		try {
-			if(@$request['debug'] == 'true')
+			if(isset($request['debug']) && $request['debug'] == 'true')
 			{
 				error_reporting(E_ALL);
 				ini_set('display_errors', 1);

@@ -61,18 +61,18 @@ class Index extends \Magento\Framework\App\Action\Action
 		try {
 
 			$request = $this->requestInterface->getParams();
-			if(@$request['debug'] == 'true')
+			if(isset($request['debug']) && $request['debug'] == 'true')
 			{
 				error_reporting(E_ALL);
 				ini_set('display_errors', 1);
 				register_shutdown_function( "feedoptimise_fatal_handler_stores" );
 			}
-			if(@$request['phpinfo'] == 'true')
+			if(isset($request['phpinfo']) && $request['phpinfo'] == 'true')
 			{
 				phpinfo();
 				die;
 			}
-			if(@$request['meminfo'] == 'true')
+			if(isset($request['meminfo']) && $request['meminfo'] == 'true')
 			{
 				$result = $this->resultJsonFactory->create();
 				$meminfo = array();

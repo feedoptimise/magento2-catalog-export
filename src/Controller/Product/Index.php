@@ -109,7 +109,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		$request = $this->requestInterface->getParams();
 
 		try {
-			if(@$request['debug'] == 'true')
+			if(isset($request['debug']) && $request['debug'] == 'true')
 			{
 				error_reporting(E_ALL);
 				ini_set('display_errors', 1);
@@ -328,7 +328,6 @@ class Index extends \Magento\Framework\App\Action\Action
 		{
 			$stockItem = $_product->getExtensionAttributes()->getStockItem();
 			$product['stock'] = [
-				'stock_id' => $stockItem->getData('stock_id'),
 				'qty' => $stockItem->getData('qty'),
 				'min_sale_qty' => $stockItem->getData('min_sale_qty'),
 				'max_sale_qty' => $stockItem->getData('max_sale_qty'),
@@ -346,58 +345,138 @@ class Index extends \Magento\Framework\App\Action\Action
 		$product['thumbnail'] = $this->storeController->baseImageUrl.$_product->getData('thumbnail');
 		$product['final_price'] = $_product->getFinalPrice();
 
-		// categories
-		if ($categoryIds = $_product->getCategoryIds())
-		{
-			$product['categories'] = [];
-			$_category_ids = [];
-			$_categoryPaths = [];
-			$_categoryNames = [];
-			$_categoryPathNames = [];
 
-			// get the category paths
-			foreach ($categoryIds as $categoryId)
+		$request = $this->requestInterface->getParams();
+
+		if(isset($request['category_ver']) &&  $request['category_ver'] =='2')
+		{
+			if ($categoryIds = $_product->getCategoryIds())
 			{
+				//types and taxonomy
+				$categories = array();
+				$level = -1;
+				$catPath = array();
+				$categoryIds = $_product->getCategoryIds();
+				$typesPath = [];
+				if (count($categoryIds) > 0)
+				{
+					foreach ($categoryIds as $categoryId)
+					{
+						try{
+							$cat = $this->categoryRepository->get($categoryId);
+
+							$typesPath[] = $cat->getPathIds();
+							if ($cat->getLevel() > $level)
+							{
+								$level = $cat->getLevel();
+								$catPath = $cat->getPathIds();
+							}
+							$cat->clearInstance();
+						} catch(\Exception $e){}
+					}
+					unset($categoryIds);
+				}
+
+				if (count($catPath))
+				{
+					foreach ($catPath as $categoryId)
+					{
+						$cat2 = $this->categoryRepository->get($categoryId);
+
+						if ($cat2->getLevel() > 1 && $cat2->getName() != '')
+						{
+							$categories[] = $cat2->getName();
+						}
+						$cat2->clearInstance();
+					}
+				}
+				$product['category'] = implode(' > ', $categories);
+
+				$types = array();
+				if (count($typesPath))
+				{
+					foreach ($typesPath as $catPath)
+					{
+						$categories = array();
+						if (count($catPath))
+						{
+							foreach ($catPath as $categoryId)
+							{
+								$cat2 = $this->categoryRepository->get($categoryId);
+
+								if ($cat2->getLevel() > 1 && $cat2->getName() != '')
+								{
+									$categories[] = $cat2->getName();
+								}
+								$cat2->clearInstance();
+							}
+						}
+						$categories = implode(' > ', $categories);
+						if ($categories)
+							$types[] = $categories;
+					}
+				}
+
+				$product['categories'] = $types;
+			}
+		}
+		else
+		{
+			// categories
+			if ($categoryIds = $_product->getCategoryIds())
+			{
+				$product['categories'] = [];
+				$_category_ids = [];
+				$_categoryPaths = [];
+				$_categoryNames = [];
+				$_categoryPathNames = [];
+
+				// get the category paths
+				foreach ($categoryIds as $categoryId)
+				{
 			    try {
                     $category = $this->categoryRepository->get($categoryId);
                     $_categoryNames[$category->getId()] = $category->getName();
                     $_categoryPaths[] = $category->getPath();
                     $category->clearInstance();
                 } catch(\Exception $e){}
-			}
-
-			// convert category id's to category names
-			foreach($_categoryPaths as $categoryPath)
-			{
-				$splitPath = explode("/", $categoryPath);
-				$_pathNames = [];
-				$category_ids = [];
-				foreach($splitPath as $categoryId)
-					if (isset($_categoryNames[$categoryId]))
-					{
-						$category_ids[] = $categoryId;
-						$_pathNames[] = $_categoryNames[$categoryId];
-					}
-				$category_ids = implode(" > ", $category_ids);
-				$_categoryPathNames[$category_ids] = implode(" > ", $_pathNames);
-			}
-
-			// remove any duplicates
-			foreach($_categoryPathNames as $index => $pathNames)
-			{
-				$splitPath = explode(" > ", $pathNames);
-				array_pop($splitPath);
-				if(count($splitPath) > 0)
-				{
-					$catIndex = array_search(implode(' > ', $splitPath), $_categoryPathNames);
-					if ($catIndex !== -1)
-						unset($_categoryPathNames[$catIndex]);
 				}
-			}
 
-			$product['category_ids'] = array_keys($_categoryPathNames);
-			$product['categories'] = array_values($_categoryPathNames);
+				// convert category id's to category names
+				foreach($_categoryPaths as $categoryPath)
+				{
+					$splitPath = explode("/", $categoryPath);
+					$_pathNames = [];
+					$category_ids = [];
+					foreach($splitPath as $categoryId)
+						if (isset($_categoryNames[$categoryId]))
+						{
+							$category_ids[] = $categoryId;
+							$_pathNames[] = $_categoryNames[$categoryId];
+						}
+					$category_ids = implode(" > ", $category_ids);
+					$_categoryPathNames[$category_ids] = implode(" > ", $_pathNames);
+				}
+
+				// remove any duplicates
+				foreach($_categoryPathNames as $index => $pathNames)
+				{
+					$splitPath = explode(" > ", $pathNames);
+					array_pop($splitPath);
+					if(count($splitPath) > 0)
+					{
+						$catIndex = array_search(implode(' > ', $splitPath), $_categoryPathNames);
+						if ($catIndex !== -1)
+							unset($_categoryPathNames[$catIndex]);
+					}
+				}
+
+				$product['category_ids'] = array_keys($_categoryPathNames);
+				$product['categories'] = array_values($_categoryPathNames);
+			}
 		}
+
+
 
 		// images
 		$_media = $_product->getMediaGalleryImages();

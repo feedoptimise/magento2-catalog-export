@@ -1,3 +1,6 @@
+### 1.2.10 (2020-09-28)
+  1. Added another way to get categories forced by adding param `?category_ver=2`
+
 ### 1.2.9 (2020-08-17)
   1. Category try, catch()
   
