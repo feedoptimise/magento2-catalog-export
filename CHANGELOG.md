@@ -1,3 +1,6 @@
+### 1.2.11 (2020-10-08)
+  1. Added `&visibility_all=1` and `&status_all=1` params
+
 ### 1.2.10 (2020-09-28)
   1. Added another way to get categories forced by adding param `?category_ver=2`
 

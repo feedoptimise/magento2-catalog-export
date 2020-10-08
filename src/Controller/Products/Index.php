@@ -186,8 +186,18 @@ class Index extends \Magento\Framework\App\Action\Action
 		$collection->addStoreFilter($this->storeId);
 		$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
 		$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
-		$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
-		$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
+
+		$request = $this->requestInterface->getParams();
+		if(!isset($request['status_all']) || !$request['status_all'])
+		{
+			$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
+		}
+
+		if(!isset($request['visibility_all']) || !$request['visibility_all'])
+		{
+			$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
+		}
+
 		return $collection->count();
 	}
 	/**
@@ -202,8 +212,16 @@ class Index extends \Magento\Framework\App\Action\Action
 		$collection->addStoreFilter($this->storeId);
 		$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
 		$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
-		$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
-		$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
+
+		if(!isset($request['status_all']) || !$request['status_all'])
+		{
+			$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
+		}
+
+		if(!isset($request['visibility_all']) || !$request['visibility_all'])
+		{
+			$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
+		}
 
 		$collection->setPageSize((isset($request['limit']) ? (int)$request['limit'] : 50));
 		$collection->setCurPage((isset($request['page']) ? (int)$request['page'] : 1));
