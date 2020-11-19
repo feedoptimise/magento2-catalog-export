@@ -184,17 +184,18 @@ class Index extends \Magento\Framework\App\Action\Action
 		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
 		$collection = $this->productCollectionFactory->create();
 		$collection->addStoreFilter($this->storeId);
-		$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
-		$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
+
 
 		$request = $this->requestInterface->getParams();
 		if(!isset($request['status_all']) || !$request['status_all'])
 		{
-			$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
+				$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
+				$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
 		}
 
 		if(!isset($request['visibility_all']) || !$request['visibility_all'])
 		{
+			$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
 			$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
 		}
 
@@ -210,16 +211,16 @@ class Index extends \Magento\Framework\App\Action\Action
 		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
 		$collection = $this->productCollectionFactory->create();
 		$collection->addStoreFilter($this->storeId);
-		$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
-		$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
 
 		if(!isset($request['status_all']) || !$request['status_all'])
 		{
+			$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
 			$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
 		}
 
 		if(!isset($request['visibility_all']) || !$request['visibility_all'])
 		{
+			$collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
 			$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
 		}
 

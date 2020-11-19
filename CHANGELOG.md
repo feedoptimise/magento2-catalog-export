@@ -1,3 +1,6 @@
+### 1.2.12 (2020-11-19)
+  1. Improved `&visibility_all=1` and `&status_all=1` params
+
 ### 1.2.11 (2020-10-08)
   1. Added `&visibility_all=1` and `&status_all=1` params
 
