@@ -1,3 +1,6 @@
+### 1.2.13 (2020-11-19)
+  1. Added `&no_total=1`
+
 ### 1.2.12 (2020-11-19)
   1. Improved `&visibility_all=1` and `&status_all=1` params
 

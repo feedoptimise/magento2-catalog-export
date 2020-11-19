@@ -140,7 +140,7 @@ class Index extends \Magento\Framework\App\Action\Action
 					'error' => false,
 					'code' => 200,
 					'payload' => [
-						'total' => $this->getProductCount(),
+						'total' => (!isset($request['no_total']) || !$request['no_total']) ? $this->getProductCount() : null,
 						'returned_total' => count($products),
 						'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
 						'pagination' => [
