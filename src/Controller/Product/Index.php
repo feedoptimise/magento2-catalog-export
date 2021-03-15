@@ -282,6 +282,28 @@ class Index extends \Magento\Framework\App\Action\Action
 		}
 		return $return;
 	}
+    /**
+     * Get product grouped options method
+     * @return array|boolean
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    protected function getProductBundleOptions($_product)
+    {
+        $return = [];
+        $_children = $_product->getTypeInstance(true)->getChildrenIds($_product->getId());
+        if(isset($_children[1])){
+            foreach($_children[1] as $_childId)
+            {
+                $_childProduct = $this->productRepository->getById($_childId);
+                $child = $this->getProductData($_childProduct);
+                $child['url'] = $_product->getProductUrl();
+                $return[] = $child;
+                $_childProduct->clearInstance();
+            }
+        }
+
+        return $return;
+    }
 	/**
 	 * Get product data method
 	 * @return array
@@ -545,6 +567,10 @@ class Index extends \Magento\Framework\App\Action\Action
 					{
 						$product['variants'] = $this->getProductGroupedOptions($_product);
 					}
+                    else if ($_product->getTypeId() === "bundle")
+                    {
+                        $product['variants'] = $this->getProductBundleOptions($_product);
+                    }
 
 					$_product->clearInstance();
 				} catch (\Exception $e)
