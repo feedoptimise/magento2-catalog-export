@@ -1,3 +1,6 @@
+### 1.2.14 (2021-03-15)
+  1. Added support for exporting bundle products
+
 ### 1.2.13 (2020-11-19)
   1. Added `&no_total=1`
 
