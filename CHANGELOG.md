@@ -1,3 +1,6 @@
+### 1.2.16 (2021-03-16)
+  1. Build version fix
+
 ### 1.2.15 (2021-03-16)
   1. Build version fix
 
