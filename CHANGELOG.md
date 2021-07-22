@@ -1,3 +1,6 @@
+### 1.3.1 (2021-07-22)
+  1. Added support for connector to new feedoptimise platform
+
 ### 1.2.16 (2021-03-16)
   1. Build version fix
 

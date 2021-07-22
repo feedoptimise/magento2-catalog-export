@@ -179,7 +179,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		catch (\Throwable $e) {
 			$result = $this->resultJsonFactory->create();
 
-			$result->setData([
+			 return $result->setData([
 				'error' => true,
 				'code' => 500,
 				'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
@@ -188,7 +188,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		} catch (\Exception $e) {
 			$result = $this->resultJsonFactory->create();
 
-			$result->setData([
+			return $result->setData([
 				'error' => true,
 				'code' => 500,
 				'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
@@ -601,6 +601,10 @@ class Index extends \Magento\Framework\App\Action\Action
 				{
 					$product['variants'] = $this->getProductGroupedOptions($_product);
 				}
+                else if ($_product->getTypeId() === "bundle")
+                {
+                    $product['variants'] = $this->getProductBundleOptions($_product);
+                }
 
 				$_product->clearInstance();
 			} catch (\Exception $e)
