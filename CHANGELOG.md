@@ -1,3 +1,6 @@
+### 1.2.17 (2021-08-31)
+  1. Load out of stock product
+
 ### 1.2.16 (2021-03-16)
   1. Build version fix
 
