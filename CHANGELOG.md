@@ -1,3 +1,6 @@
+### 1.2.18 (2021-09-02)
+  1. load out of stock variants
+
 ### 1.2.17 (2021-08-31)
   1. Load out of stock product
 
