@@ -1,3 +1,6 @@
+### 1.2.19 (2021-09-07)
+  1. Fix image url
+
 ### 1.2.18 (2021-09-02)
   1. load out of stock variants
 

@@ -524,6 +524,13 @@ class Index extends \Magento\Framework\App\Action\Action
                 $product['videos'][] = $_media_item->getData();
             }
         }
+        if(
+            (empty($product['image']) || strpos($product['image'],'productno_selection') !== false)
+            && !empty($product['images'])
+        ){
+            $product['image'] = $product['images'][0];
+        }
+
         unset($product['media_gallery']);
 
         return $product;
