@@ -1,3 +1,6 @@
+### 1.2.20 (2021-10-11)
+  1. Fix download bundle product options
+
 ### 1.2.19 (2021-09-07)
   1. Fix image url
 

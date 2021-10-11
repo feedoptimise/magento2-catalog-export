@@ -299,14 +299,15 @@ class Index extends \Magento\Framework\App\Action\Action
         $return = [];
         $_children = $_product->getTypeInstance(true)->getChildrenIds($_product->getId());
         if(!empty($_children)){
-            $_children = array_shift($_children);
-            foreach($_children as $_childId)
-            {
-                $_childProduct = $this->productRepository->getById($_childId, false, $this->storeId);
-                $child = $this->getProductData($_childProduct);
-                $child['url'] = $_product->getProductUrl();
-                $return[] = $child;
-                $_childProduct->clearInstance();
+            foreach ($_children as $childArray){
+                foreach($childArray as $_childId)
+                {
+                    $_childProduct = $this->productRepository->getById($_childId, false, $this->storeId);
+                    $child = $this->getProductData($_childProduct);
+                    $child['url'] = $_product->getProductUrl();
+                    $return[] = $child;
+                    $_childProduct->clearInstance();
+                }
             }
         }
 
