@@ -1,3 +1,9 @@
+### 1.2.22 (2021-10-14)
+  1. Added optional parameter: load_from_cache with options:
+     1. automatic - DEFAULT | first will try to load product from cache if results are empty then will try to reload without cache.
+     2. off - always load fresh data without cache - (this can be slow on performance)
+     3. on - load only from cache
+
 ### 1.2.21 (2021-10-14)
   1. Fix issue with cache 
 

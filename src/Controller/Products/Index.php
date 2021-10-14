@@ -132,6 +132,8 @@ class Index extends \Magento\Framework\App\Action\Action
 				// set the current store
 				$this->setStoreId($request['store_id']);
 
+                $this->productController->setLoadFromCache(@$request['load_from_cache']);
+
 				/** @var \Magento\Framework\DataObject[] $products */
 				$products = $this->getProducts($request);
 

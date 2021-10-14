@@ -43,6 +43,9 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $productStatus;
     protected $productVisibility;
 
+    /** @var string  automatic | off | on  */
+    protected $loadFromCache = 'automatic';
+
     /**
      * Framework Params
      * @param \Magento\Framework\App\Action\Context $context
@@ -149,6 +152,8 @@ class Index extends \Magento\Framework\App\Action\Action
                 // set the current store
                 $this->setStoreId($request['store_id']);
 
+                $this->setLoadFromCache(@$request['load_from_cache']);
+
                 /** @var \Magento\Framework\DataObject[] $product */
                 $product = $this->getProduct($request['entity_id']);
 
@@ -202,6 +207,12 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->storeId = (int)$storeId;
     }
 
+    public function setLoadFromCache($option)
+    {
+        if(!empty($option) && in_array($option, ['automatic', 'off', 'on']))
+            $this->loadFromCache = $option;
+    }
+
     /**
      * Get product options method
      * @return array|boolean
@@ -227,7 +238,7 @@ class Index extends \Magento\Framework\App\Action\Action
         {
             try
             {
-                $_childProduct = $this->productRepository->getById($_child->getId(), false, $this->storeId, true);
+                $_childProduct = $this->getProductById($_child->getId());
                 $child = $this->getProductData($_childProduct);
             } catch(\Exception $e)
             {
@@ -285,7 +296,7 @@ class Index extends \Magento\Framework\App\Action\Action
             $_children = array_shift($_children);
             foreach($_children as $_childId)
             {
-                $_childProduct = $this->productRepository->getById($_childId, false, $this->storeId, true);
+                $_childProduct = $this->getProductById($_childId);
                 $child = $this->getProductData($_childProduct);
                 $child['url'] = $_product->getProductUrl();
                 $return[] = $child;
@@ -295,6 +306,21 @@ class Index extends \Magento\Framework\App\Action\Action
 
         return $return;
     }
+
+    public function getProductById($id)
+    {
+        if($this->loadFromCache == 'automatic'){
+            $product = $this->productRepository->getById($id, false, $this->storeId);
+            if(empty((array)$product->getData())){
+                $product = $this->productRepository->getById($id, false, $this->storeId, true);
+            }
+            return $product;
+        }elseif ($this->loadFromCache == 'off')
+            return $this->productRepository->getById($id, false, $this->storeId, true);
+        elseif ($this->loadFromCache == 'on')
+            return $this->productRepository->getById($id, false, $this->storeId);
+    }
+
     /**
      * Get product grouped options method
      * @return array|boolean
@@ -308,7 +334,7 @@ class Index extends \Magento\Framework\App\Action\Action
             foreach ($_children as $childArray){
                 foreach($childArray as $_childId)
                 {
-                    $_childProduct = $this->productRepository->getById($_childId, false, $this->storeId, true);
+                    $_childProduct = $this->getProductById($_childId);
                     $child = $this->getProductData($_childProduct);
                     $child['url'] = $_product->getProductUrl();
                     $return[] = $child;
@@ -581,7 +607,7 @@ class Index extends \Magento\Framework\App\Action\Action
             {
                 try
                 {
-                    $_product = $this->productRepository->getById($item->getId(), false, $this->storeId, true);
+                    $_product = $this->getProductById($item->getId());
                     $product = $this->getProductData($_product);
 
                     // options/grouped options
@@ -615,7 +641,7 @@ class Index extends \Magento\Framework\App\Action\Action
         {
             try
             {
-                $_product = $this->productRepository->getById($entity_id, false, $this->storeId, true);
+                $_product = $this->getProductById($entity_id);
                 $product = $this->getProductData($_product);
 
                 // options/grouped options
