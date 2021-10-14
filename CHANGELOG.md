@@ -1,3 +1,6 @@
+### 1.2.21 (2021-10-14)
+  1. Fix issue with cache 
+
 ### 1.2.20 (2021-10-11)
   1. Fix download bundle product options
 

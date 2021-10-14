@@ -130,8 +130,7 @@ class Index extends \Magento\Framework\App\Action\Action
 			else
 			{
 				// set the current store
-				$this->storeController->setStore($request['store_id']);
-				$this->storeId = (int)$request['store_id'];
+				$this->setStoreId($request['store_id']);
 
 				/** @var \Magento\Framework\DataObject[] $products */
 				$products = $this->getProducts($request);
@@ -173,6 +172,13 @@ class Index extends \Magento\Framework\App\Action\Action
 		}
 
 	}
+
+	public function setStoreId($id)
+    {
+        $this->productController->setStoreId($id);
+        $this->storeController->setStore($id);
+        $this->storeId = (int)$id;
+    }
 
 	/**
 	 * Get product count method

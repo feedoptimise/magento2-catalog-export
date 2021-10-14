@@ -147,8 +147,7 @@ class Index extends \Magento\Framework\App\Action\Action
             else
             {
                 // set the current store
-                //$this->storeController->setStore($request['store_id']);
-                $this->storeId = (int)$request['store_id'];
+                $this->setStoreId($request['store_id']);
 
                 /** @var \Magento\Framework\DataObject[] $product */
                 $product = $this->getProduct($request['entity_id']);
@@ -196,6 +195,13 @@ class Index extends \Magento\Framework\App\Action\Action
             ]);
         }
     }
+
+    public function setStoreId($storeId)
+    {
+        $this->storeController->setStore($storeId);
+        $this->storeId = (int)$storeId;
+    }
+
     /**
      * Get product options method
      * @return array|boolean
@@ -221,7 +227,7 @@ class Index extends \Magento\Framework\App\Action\Action
         {
             try
             {
-                $_childProduct = $this->productRepository->getById($_child->getId());
+                $_childProduct = $this->productRepository->getById($_child->getId(), false, $this->storeId, true);
                 $child = $this->getProductData($_childProduct);
             } catch(\Exception $e)
             {
@@ -279,7 +285,7 @@ class Index extends \Magento\Framework\App\Action\Action
             $_children = array_shift($_children);
             foreach($_children as $_childId)
             {
-                $_childProduct = $this->productRepository->getById($_childId);
+                $_childProduct = $this->productRepository->getById($_childId, false, $this->storeId, true);
                 $child = $this->getProductData($_childProduct);
                 $child['url'] = $_product->getProductUrl();
                 $return[] = $child;
@@ -302,7 +308,7 @@ class Index extends \Magento\Framework\App\Action\Action
             foreach ($_children as $childArray){
                 foreach($childArray as $_childId)
                 {
-                    $_childProduct = $this->productRepository->getById($_childId, false, $this->storeId);
+                    $_childProduct = $this->productRepository->getById($_childId, false, $this->storeId, true);
                     $child = $this->getProductData($_childProduct);
                     $child['url'] = $_product->getProductUrl();
                     $return[] = $child;
@@ -575,7 +581,7 @@ class Index extends \Magento\Framework\App\Action\Action
             {
                 try
                 {
-                    $_product = $this->productRepository->getById($item->getId());
+                    $_product = $this->productRepository->getById($item->getId(), false, $this->storeId, true);
                     $product = $this->getProductData($_product);
 
                     // options/grouped options
@@ -609,7 +615,7 @@ class Index extends \Magento\Framework\App\Action\Action
         {
             try
             {
-                $_product = $this->productRepository->getById($entity_id);
+                $_product = $this->productRepository->getById($entity_id, false, $this->storeId, true);
                 $product = $this->getProductData($_product);
 
                 // options/grouped options
