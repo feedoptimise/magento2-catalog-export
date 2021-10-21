@@ -1,3 +1,6 @@
+### 1.2.23 (2021-10-21)
+  1. Display module version in config
+
 ### 1.2.22 (2021-10-14)
   1. Added optional parameter: load_from_cache with options:
      1. automatic - DEFAULT | first will try to load product from cache if results are empty then will try to reload without cache.
