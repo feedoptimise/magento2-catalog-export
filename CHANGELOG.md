@@ -1,3 +1,6 @@
+### 1.2.24 (2021-10-21)
+  1. Added parameter: since_id
+
 ### 1.2.23 (2021-10-21)
   1. Display module version in config
 

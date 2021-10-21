@@ -234,7 +234,14 @@ class Index extends \Magento\Framework\App\Action\Action
 		}
 
 		$collection->setPageSize((isset($request['limit']) ? (int)$request['limit'] : 50));
-		$collection->setCurPage((isset($request['page']) ? (int)$request['page'] : 1));
+
+        $collection->setOrder('entity_id','ASC');
+
+        if(isset($request['since_id']) && is_numeric($request['since_id'])){
+            $collection->addFieldToFilter('entity_id', array('gt' => $request['since_id']));
+        }else{
+            $collection->setCurPage((isset($request['page']) ? (int)$request['page'] : 1));
+        }
 
 		/** @var \Magento\Framework\DataObject[] $products */
 		$products = [];
