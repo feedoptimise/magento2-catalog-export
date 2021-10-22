@@ -191,6 +191,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	{
 		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
 		$collection = $this->productCollectionFactory->create();
+        $collection->setFlag('has_stock_status_filter', true);
 		$collection->addStoreFilter($this->storeId);
 
 

@@ -1,3 +1,6 @@
+### 1.2.25 (2021-10-22)
+  1. Fix total product count
+
 ### 1.2.24 (2021-10-21)
   1. Added parameter: since_id
 
