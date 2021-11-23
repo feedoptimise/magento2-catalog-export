@@ -1,3 +1,6 @@
+### 1.2.26 (2021-11-23)
+  1. Add support for tier price in final_price
+
 ### 1.2.25 (2021-10-22)
   1. Fix total product count
 

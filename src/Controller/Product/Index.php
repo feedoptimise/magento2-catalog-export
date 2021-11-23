@@ -410,7 +410,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $product['image'] = $this->storeController->baseImageUrl.$_product->getImage();
         $product['small_image'] = $this->storeController->baseImageUrl.$_product->getData('small_image');
         $product['thumbnail'] = $this->storeController->baseImageUrl.$_product->getData('thumbnail');
-        $product['final_price'] = $_product->getFinalPrice();
+        $product['final_price'] = $_product->getFinalPrice(1);
 
         $request = $this->requestInterface->getParams();
 
