@@ -7,7 +7,11 @@
 
 namespace Feedoptimise\CatalogExport\Controller\Stores;
 
-class Index extends \Magento\Framework\App\Action\Action
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
+
+class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
 {
 	/**
 	 * Framework Variables
@@ -222,6 +226,16 @@ class Index extends \Magento\Framework\App\Action\Action
 			];
 		}
 	}
+
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        return null;
+    }
+
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
+    }
 }
 
 

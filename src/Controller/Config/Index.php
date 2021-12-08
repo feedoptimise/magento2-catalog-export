@@ -7,7 +7,11 @@
 
 namespace Feedoptimise\CatalogExport\Controller\Config;
 
-class Index extends \Magento\Framework\App\Action\Action
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
+
+class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
 {
 	/**
 	 * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -48,4 +52,14 @@ class Index extends \Magento\Framework\App\Action\Action
 
 		return $result->setData($data);
 	}
+
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        return null;
+    }
+
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
+    }
 }

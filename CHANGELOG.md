@@ -1,3 +1,6 @@
+### 1.2.27 (2021-12-08)
+  1. Add support for POST request
+
 ### 1.2.26 (2021-11-23)
   1. Add support for tier price in final_price
 
