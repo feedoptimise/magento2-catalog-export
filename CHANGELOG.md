@@ -1,3 +1,7 @@
+### 1.2.28 (2022-01-25)
+  1. Added endpoint for List of Source - MIS
+  2. Read available source for product
+
 ### 1.2.27 (2021-12-08)
   1. Add support for POST request
 

@@ -46,6 +46,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     protected $productCollectionFactory;
     protected $productStatus;
     protected $productVisibility;
+    protected $getSourceItemsBySku;
 
     /** @var string  automatic | off | on  */
     protected $loadFromCache = 'automatic';
@@ -67,6 +68,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
      * @param \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus
      * @param \Magento\Catalog\Model\Product\Visibility $productVisibility
+     * @param \Magento\Inventory\Model\SourceItem\Command\GetSourceItemsBySku $getSourceItemsBySku
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function __construct(
@@ -84,7 +86,8 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus,
-        \Magento\Catalog\Model\Product\Visibility $productVisibility
+        \Magento\Catalog\Model\Product\Visibility $productVisibility,
+        \Magento\Inventory\Model\SourceItem\Command\GetSourceItemsBySku $getSourceItemsBySku
     )
     {
         // Framework Variables
@@ -103,6 +106,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productStatus = $productStatus;
         $this->productVisibility = $productVisibility;
+        $this->getSourceItemsBySku = $getSourceItemsBySku;
 
         return parent::__construct($context);
     }
@@ -349,6 +353,26 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
         return $return;
     }
+
+    protected function getSourceItemsBySku($sku)
+    {
+        $result = [];
+        try{
+            $sourceItems = $this->getSourceItemsBySku->execute($sku);
+
+            foreach ($sourceItems as $sourceItemId => $sourceItem) {
+                $result[] = [
+                    'sku' => $sourceItem->getSku(),
+                    'source_code' => $sourceItem->getSourceCode(),
+                    'is_salable' => $sourceItem->getStatus(),
+                    'qty' => $sourceItem->getQuantity()
+                ];
+            }
+        }catch (\Exception $ex){
+
+        }
+        return $result;
+    }
     /**
      * Get product data method
      * @return array
@@ -409,7 +433,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         {}
         catch (\Throwable $e)
         {}
-
+        $product['mis_stock_source'] = $this->getSourceItemsBySku($_product->getSku());
         $product['url'] = $_product->getProductUrl();
         $product['image'] = $this->storeController->baseImageUrl.$_product->getImage();
         $product['small_image'] = $this->storeController->baseImageUrl.$_product->getData('small_image');
