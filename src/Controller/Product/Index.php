@@ -87,7 +87,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus,
         \Magento\Catalog\Model\Product\Visibility $productVisibility,
-        \Magento\Inventory\Model\SourceItem\Command\GetSourceItemsBySku $getSourceItemsBySku
+        \Feedoptimise\CatalogExport\Model\Source\SourceFactory $getSourceItemsBySku
     )
     {
         // Framework Variables
@@ -106,7 +106,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productStatus = $productStatus;
         $this->productVisibility = $productVisibility;
-        $this->getSourceItemsBySku = $getSourceItemsBySku;
+        $this->getSourceItemsBySku = $getSourceItemsBySku->create(['type' => 'GetSourceItemsBySku']);
 
         return parent::__construct($context);
     }
@@ -356,6 +356,8 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
     protected function getSourceItemsBySku($sku)
     {
+        if(!$this->getSourceItemsBySku)
+            return false;
         $result = [];
         try{
             $sourceItems = $this->getSourceItemsBySku->execute($sku);

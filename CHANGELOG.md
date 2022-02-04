@@ -1,3 +1,6 @@
+### 1.2.29 (2022-02-04)
+  1. Added check if MIS is enabled
+
 ### 1.2.28 (2022-01-25)
   1. Added endpoint for List of Source - MIS
   2. Read available source for product

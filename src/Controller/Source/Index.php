@@ -21,13 +21,13 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         \Magento\Framework\App\RequestInterface $requestInterface,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Feedoptimise\CatalogExport\Helper\Settings $extensionSettings,
-        \Magento\InventoryApi\Api\SourceRepositoryInterface $sourceRepository
+        \Feedoptimise\CatalogExport\Model\Source\SourceFactory $sourceRepository
     )
     {
         $this->requestInterface = $requestInterface;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->extensionSettings = $extensionSettings;
-        $this->sourceRepository = $sourceRepository;
+        $this->sourceRepository = $sourceRepository->create(['type' => 'SourceRepositoryInterface']);
 
         return parent::__construct($context);
     }
@@ -81,7 +81,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                     'error' => false,
                     'code' => 200,
                     'payload' => [
-                        'total' => count($source),
+                        'total' => (is_array($source))?count($source):0,
                         'source' => $source
                     ]
                 ]);
@@ -108,6 +108,10 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
     protected function getSource()
     {
+
+        if(!$this->sourceRepository)
+            return false;
+
         $results = [];
         try{
             $sourceData = $this->sourceRepository->getList();
