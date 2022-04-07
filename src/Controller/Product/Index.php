@@ -157,6 +157,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
             }
             else
             {
+                $currentStoreId = $this->storeController->getCurrentStoreId();
                 // set the current store
                 $this->setStoreId($request['store_id']);
 
@@ -164,6 +165,8 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
                 /** @var \Magento\Framework\DataObject[] $product */
                 $product = $this->getProduct($request['entity_id']);
+
+                $this->setStoreId($currentStoreId);
 
                 /** @var array $return */
                 $return = [

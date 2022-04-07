@@ -1,3 +1,6 @@
+### 1.2.30 (2022-04-07)
+  1. Reset current store after request
+
 ### 1.2.29 (2022-02-04)
   1. Added check if MIS is enabled
 

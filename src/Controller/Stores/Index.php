@@ -145,6 +145,8 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 		/** @var array $options */
 		$options = [];
 
+        $currentStoreId = $this->getCurrentStoreId();
+
 		foreach ($storeManagerDataList as $key => $value) {
 			$currencies = $this->getStoreCurrencies($value->getStoreId());
 			$options[] = [
@@ -155,6 +157,8 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 				'currencies' => $currencies
 			];
 		}
+
+        $this->setStore($currentStoreId);
 
 		return $options;
 	}
@@ -196,6 +200,11 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
 		return true;
 	}
+
+    public function getCurrentStoreId()
+    {
+        return $this->storeManager->getStore()->getId();
+    }
 	/**
 	 * Get stores method
 	 *
