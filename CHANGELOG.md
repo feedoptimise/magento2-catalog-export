@@ -1,3 +1,6 @@
+### 1.2.31 (2022-05-13)
+  1. CSP whitelist for trucking code
+
 ### 1.2.30 (2022-04-07)
   1. Reset current store after request
 
