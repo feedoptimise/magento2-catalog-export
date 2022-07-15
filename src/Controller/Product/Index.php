@@ -337,17 +337,31 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
      * @return array|boolean
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function getProductBundleOptions($_product)
+    protected function getProductBundleOptions($_product, $type)
     {
         $return = [];
+        $options = [];
+        if($type == 'bundle'){
+            $optionCollection = $_product->getTypeInstance(true)->getOptionsCollection($_product);
+            foreach ($optionCollection as $option){
+                $options[$option->getOptionId()] = $option->getTitle();
+            }
+        }
+
         $_children = $_product->getTypeInstance(true)->getChildrenIds($_product->getId());
         if(!empty($_children)){
-            foreach ($_children as $childArray){
+            foreach ($_children as $optionId => $childArray){
                 foreach($childArray as $_childId)
                 {
                     $_childProduct = $this->getProductById($_childId);
                     $child = $this->getProductData($_childProduct);
                     $child['url'] = $_product->getProductUrl();
+                    if($type == 'bundle'){
+                        $child['bundle_option_id'] = $optionId;
+                        if(@$options[$optionId])
+                            $child['bundle_option_title'] = $options[$optionId];
+                    }
+
                     $return[] = $child;
                     $_childProduct->clearInstance();
                 }
@@ -650,11 +664,11 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                     }
                     else if ($_product->getTypeId() === "grouped")
                     {
-                        $product['variants'] = $this->getProductBundleOptions($_product);
+                        $product['variants'] = $this->getProductBundleOptions($_product, 'grouped');
                     }
                     else if ($_product->getTypeId() === "bundle")
                     {
-                        $product['variants'] = $this->getProductBundleOptions($_product);
+                        $product['variants'] = $this->getProductBundleOptions($_product, 'bundle');
                     }
 
                     $_product->clearInstance();
@@ -684,11 +698,11 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                 }
                 else if ($_product->getTypeId() === "grouped")
                 {
-                    $product['variants'] = $this->getProductBundleOptions($_product);
+                    $product['variants'] = $this->getProductBundleOptions($_product, 'grouped');
                 }
                 else if ($_product->getTypeId() === "bundle")
                 {
-                    $product['variants'] = $this->getProductBundleOptions($_product);
+                    $product['variants'] = $this->getProductBundleOptions($_product, 'bundle');
                 }
 
                 $_product->clearInstance();

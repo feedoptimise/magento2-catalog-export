@@ -1,3 +1,6 @@
+### 1.2.32 (2022-07-15)
+  1. Product Bundle - Added attribute "bundle_option_id" and "bundle_option_title" to variants
+
 ### 1.2.31 (2022-05-13)
   1. CSP whitelist for trucking code
 
