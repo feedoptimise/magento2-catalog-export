@@ -1,3 +1,6 @@
+### 1.2.34 (2022-07-20)
+  1. Clean up code
+
 ### 1.2.33 (2022-07-20)
   1. Added endpoint to check health status of indexer and cache
 
