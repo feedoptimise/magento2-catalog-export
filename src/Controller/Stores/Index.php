@@ -11,7 +11,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
-class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
+class Index extends \Magento\Framework\App\Action\Action
 {
 	/**
 	 * Framework Variables
@@ -70,31 +70,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 				error_reporting(E_ALL);
 				ini_set('display_errors', 1);
 				register_shutdown_function( "feedoptimise_fatal_handler_stores" );
-			}
-			if(isset($request['phpinfo']) && $request['phpinfo'] == 'true')
-			{
-				phpinfo();
-				die;
-			}
-			if(isset($request['meminfo']) && $request['meminfo'] == 'true')
-			{
-				$result = $this->resultJsonFactory->create();
-				$meminfo = array();
-				if(file_exists("/proc/meminfo"))
-				{
-					$data = explode("\n", file_get_contents("/proc/meminfo"));
-					foreach ($data as $line) {
-						list($key, $val) = explode(":", $line);
-						$meminfo[$key] = trim($val);
-					}
-				}
-				return $result->setData([
-					'error' => false,
-					'code' => 200,
-					'payload' => [
-						'meminfo' => $meminfo,
-					]
-				]);
 			}
 
 			$result = $this->resultJsonFactory->create();
@@ -235,16 +210,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 			];
 		}
 	}
-
-    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
-    {
-        return null;
-    }
-
-    public function validateForCsrf(RequestInterface $request): ?bool
-    {
-        return true;
-    }
 }
 
 

@@ -5,7 +5,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
 
-class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
+class Index extends \Magento\Framework\App\Action\Action
 {
     /** @var RequestInterface $requestInterface */
     protected $requestInterface;
@@ -43,11 +43,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                 ini_set('display_errors', 1);
                 register_shutdown_function( "feedoptimise_fatal_handler_source" );
             }
-            if(isset($request['phpinfo']) && $request['phpinfo'] == 'true')
-            {
-                phpinfo();
-                die;
-            }
+
             if(isset($request['meminfo']) && $request['meminfo'] == 'true')
             {
                 $result = $this->resultJsonFactory->create();
@@ -121,16 +117,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         }catch (\Exception $ex){
         }
         return $results;
-    }
-
-    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
-    {
-        return null;
-    }
-
-    public function validateForCsrf(RequestInterface $request): ?bool
-    {
-        return true;
     }
 }
 

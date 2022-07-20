@@ -11,7 +11,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
-class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
+class Index extends \Magento\Framework\App\Action\Action
 {
 	/**
 	 * Framework Variables
@@ -111,15 +111,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
 				register_shutdown_function( "feedoptimise_fatal_handler_products" );
 			}
-			if(isset($request['max_execution_time']))
-			{
-				ini_set('max_execution_time', (int)$request['max_execution_time']);
-			}
-			if(isset($request['memory_limit']))
-			{
-				ini_set('memory_limit', ((int)$request['memory_limit']).'M');
-			}
-
 
 			/** @var \Magento\Framework\Controller\Result\Json $result */
 			$result = $this->resultJsonFactory->create();
@@ -151,7 +142,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 						'returned_total' => count($products),
 						'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
 						'pagination' => [
-							'limit' => (isset($request['limit']) ? (int)$request['limit'] : 50),
+							'limit' => $this->getLimit(@$request['limit']),
 							'page' => (isset($request['page']) ? (int)$request['page'] : 1)
 						],
 						'products' => $products
@@ -216,6 +207,19 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
 		return $collection->count();
 	}
+
+    protected function getLimit($limit)
+    {
+        $limit = (int)$limit;
+        if(empty($limit))
+            return 50;
+
+       if($limit > 100)
+           return 100;
+
+       return (int)$limit;
+    }
+
 	/**
 	 * Get products method
 	 * @return \Magento\Framework\DataObject[]
@@ -240,7 +244,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 			$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
 		}
 
-		$collection->setPageSize((isset($request['limit']) ? (int)$request['limit'] : 50));
+		$collection->setPageSize($this->getLimit(@$request['limit']));
 
         $collection->setOrder('entity_id','ASC');
 
@@ -259,16 +263,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
 		return $products;
 	}
-
-    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
-    {
-        return null;
-    }
-
-    public function validateForCsrf(RequestInterface $request): ?bool
-    {
-        return true;
-    }
 }
 
 function feedoptimise_fatal_handler_products()

@@ -11,7 +11,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
-class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
+class Index extends \Magento\Framework\App\Action\Action
 {
 	/**
 	 * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -52,14 +52,4 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
 		return $result->setData($data);
 	}
-
-    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
-    {
-        return null;
-    }
-
-    public function validateForCsrf(RequestInterface $request): ?bool
-    {
-        return true;
-    }
 }
