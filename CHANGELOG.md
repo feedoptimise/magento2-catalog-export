@@ -1,3 +1,6 @@
+### 1.2.33 (2022-07-20)
+  1. Added endpoint to check health status of indexer and cache
+
 ### 1.2.32 (2022-07-15)
   1. Product Bundle - Added attribute "bundle_option_id" and "bundle_option_title" to variants
 
