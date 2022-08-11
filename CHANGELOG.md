@@ -1,3 +1,6 @@
+### 1.2.36 (2022-08-11)
+  1. Fix composer config
+
 ### 1.2.35 (2022-08-11)
   1. New Endpoints with POST request support
   2. Support PHP 8
