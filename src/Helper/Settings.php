@@ -16,12 +16,16 @@ class Settings extends AbstractHelper
 	const MODULE_NAME = 'Feedoptimise_CatalogExport';
 
 	protected $_moduleList;
+    protected $storeManager;
 
 	public function __construct(
 		\Magento\Framework\App\Helper\Context $context,
-		\Magento\Framework\Module\ModuleListInterface $moduleList)
+		\Magento\Framework\Module\ModuleListInterface $moduleList,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
+    )
 	{
 		$this->_moduleList = $moduleList;
+        $this->storeManager = $storeManager;
 		parent::__construct($context);
 	}
 
@@ -42,6 +46,37 @@ class Settings extends AbstractHelper
 	{
 		return $this->getConfigValue(self::XML_PATH_EXPORT .'general/'. $code, $storeId);
 	}
+
+    /**
+     * Get stores method
+     *
+     * @return array|boolean
+     */
+    public function checkStore($storeId)
+    {
+        if(!$storeId)
+        {
+            return [
+                'error' => true,
+                'code' => 400,
+                'error_msg' => 'Please specify a store_id'
+            ];
+        }
+        else
+        {
+            /** @var \Magento\Store\Api\Data\StoreInterface[] $storeManagerDataList */
+            $storeManagerDataList = $this->storeManager->getStores();
+
+            foreach ($storeManagerDataList as $key => $value)
+                if((int)$storeId === (int)$value->getStoreId()) return true;
+
+            return [
+                'error' => true,
+                'code' => 400,
+                'error_msg' => 'Store doesn\'t exist with id: '.$storeId
+            ];
+        }
+    }
 
 	public function validateSettings($request = [])
 	{

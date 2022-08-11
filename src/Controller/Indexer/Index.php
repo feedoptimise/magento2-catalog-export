@@ -68,15 +68,44 @@ class Index extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        /** @var array $request */
-        $request = $this->requestInterface->getParams();
+        try {
+            /** @var array $request */
+            $request = $this->requestInterface->getParams();
 
-        $result = $this->resultJsonFactory->create();
-        if(($settingsError = $this->extensionSettings->validateSettings($request)) !== true)
-        {
-            return $result->setData($settingsError);
+            $result = $this->resultJsonFactory->create();
+            if(($settingsError = $this->extensionSettings->validateSettings($request)) !== true)
+            {
+                return $result->setData($settingsError);
+            }
+
+            $data = $this->getInfo();
+
+            return $result->setData([
+                'error' => false,
+                'code' => 200,
+                'payload' => $data
+            ]);
+        } catch (\Throwable $e) {
+            $result = $this->resultJsonFactory->create();
+
+            $result->setData([
+                'error' => true,
+                'code' => 500,
+                'error_msg' => $e->getMessage()
+            ]);
+        } catch (\Exception $e) {
+            $result = $this->resultJsonFactory->create();
+
+            $result->setData([
+                'error' => true,
+                'code' => 500,
+                'error_msg' => $e->getMessage()
+            ]);
         }
+    }
 
+    public function getInfo()
+    {
         $indexerCollection = $this->indexCollection->create();
         $indexStatus = [];
         foreach ($indexerCollection as $index)
@@ -97,11 +126,9 @@ class Index extends \Magento\Framework\App\Action\Action
             ];
         }
 
-        $data = [
+        return [
             'indexers' => $indexStatus,
             'cache' => $cache
         ];
-
-        return $result->setData($data);
     }
 }

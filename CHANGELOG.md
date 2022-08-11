@@ -1,3 +1,7 @@
+### 1.2.35 (2022-08-11)
+  1. New Endpoints with POST request support
+  2. Support PHP 8
+
 ### 1.2.34 (2022-07-20)
   1. Clean up code
 

@@ -113,7 +113,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	 *
 	 * @return array
 	 */
-	private function getStores()
+	public function getStores()
 	{
 		/** @var array $storeManagerDataList */
 		$storeManagerDataList = $this->storeManager->getStores();
@@ -145,7 +145,6 @@ class Index extends \Magento\Framework\App\Action\Action
 	private function getStoreCurrencies($storeId)
 	{
 		$this->storeManager->setCurrentStore($storeId);
-		$baseCurrency = $this->storeManager->getStore()->getBaseCurrencyCode();
 		$allCurrencies = $this->storeManager->getStore()->getAvailableCurrencyCodes(true);
 
 		$return = [
@@ -187,28 +186,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	 */
 	public function checkStore($storeId)
 	{
-		if(!$storeId)
-		{
-			return [
-				'error' => true,
-				'code' => 400,
-				'error_msg' => 'Please specify a store_id'
-			];
-		}
-		else
-		{
-			/** @var \Magento\Store\Api\Data\StoreInterface[] $storeManagerDataList */
-			$storeManagerDataList = $this->storeManager->getStores();
-
-			foreach ($storeManagerDataList as $key => $value)
-				if((int)$storeId === (int)$value->getStoreId()) return true;
-
-			return [
-				'error' => true,
-				'code' => 400,
-				'error_msg' => 'Store doesn\'t exist with id: '.$storeId
-			];
-		}
+		return $this->extensionSettings->checkStore($storeId);
 	}
 }
 

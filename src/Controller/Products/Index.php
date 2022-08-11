@@ -128,7 +128,7 @@ class Index extends \Magento\Framework\App\Action\Action
 				// set the current store
 				$this->setStoreId($request['store_id']);
 
-                $this->productController->setLoadFromCache(@$request['load_from_cache']);
+                $this->setLoadFromCache(@$request['load_from_cache']);
 
 				/** @var \Magento\Framework\DataObject[] $products */
 				$products = $this->getProducts($request);
@@ -138,7 +138,7 @@ class Index extends \Magento\Framework\App\Action\Action
 					'error' => false,
 					'code' => 200,
 					'payload' => [
-						'total' => (!isset($request['no_total']) || !$request['no_total']) ? $this->getProductCount() : null,
+						'total' => (!isset($request['no_total']) || !$request['no_total']) ? $this->getProductCount($request) : null,
 						'returned_total' => count($products),
 						'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
 						'pagination' => [
@@ -172,6 +172,11 @@ class Index extends \Magento\Framework\App\Action\Action
 
 	}
 
+    public function setLoadFromCache($option)
+    {
+        $this->productController->setLoadFromCache($option);
+    }
+
 	public function setStoreId($id)
     {
         $this->productController->setStoreId($id);
@@ -184,15 +189,13 @@ class Index extends \Magento\Framework\App\Action\Action
 	 * @return int
 	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
-	protected function getProductCount()
+	public function getProductCount($request)
 	{
 		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
 		$collection = $this->productCollectionFactory->create();
         $collection->setFlag('has_stock_status_filter', true);
 		$collection->addStoreFilter($this->storeId);
-
-
-		$request = $this->requestInterface->getParams();
+        
 		if(!isset($request['status_all']) || !$request['status_all'])
 		{
 				$collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
@@ -208,7 +211,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		return $collection->count();
 	}
 
-    protected function getLimit($limit)
+    public function getLimit($limit)
     {
         $limit = (int)$limit;
         if(empty($limit))
@@ -225,7 +228,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	 * @return \Magento\Framework\DataObject[]
 	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
-	protected function getProducts($request)
+	public function getProducts($request)
 	{
 		/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
 		$collection = $this->productCollectionFactory->create();

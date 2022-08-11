@@ -44,27 +44,6 @@ class Index extends \Magento\Framework\App\Action\Action
                 register_shutdown_function( "feedoptimise_fatal_handler_source" );
             }
 
-            if(isset($request['meminfo']) && $request['meminfo'] == 'true')
-            {
-                $result = $this->resultJsonFactory->create();
-                $meminfo = array();
-                if(file_exists("/proc/meminfo"))
-                {
-                    $data = explode("\n", file_get_contents("/proc/meminfo"));
-                    foreach ($data as $line) {
-                        list($key, $val) = explode(":", $line);
-                        $meminfo[$key] = trim($val);
-                    }
-                }
-                return $result->setData([
-                    'error' => false,
-                    'code' => 200,
-                    'payload' => [
-                        'meminfo' => $meminfo,
-                    ]
-                ]);
-            }
-
             $result = $this->resultJsonFactory->create();
             if(($settingsError = $this->extensionSettings->validateSettings($this->requestInterface->getParams())) !== true)
             {
@@ -102,7 +81,7 @@ class Index extends \Magento\Framework\App\Action\Action
         }
     }
 
-    protected function getSource()
+    public function getSource()
     {
 
         if(!$this->sourceRepository)
