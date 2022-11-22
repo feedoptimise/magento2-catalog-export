@@ -1,3 +1,6 @@
+### 1.2.37 (2022-11-22)
+  1. Child url added to product variants
+
 ### 1.2.36 (2022-08-11)
   1. Fix composer config
 

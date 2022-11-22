@@ -276,9 +276,12 @@ class Index extends \Magento\Framework\App\Action\Action
                 }
             }
 
-            if(count($urlParams))
+            if(count($urlParams)){
+                $child['_raw_child_url'] = @$child['url'];
                 // append the pre-selection params to the product url
                 $child['url'] = $_product->getProductUrl().'#'.implode('&', $urlParams);
+            }
+
 
             $return[] = $child;
             $_childProduct->clearInstance();
@@ -300,6 +303,7 @@ class Index extends \Magento\Framework\App\Action\Action
             {
                 $_childProduct = $this->getProductById($_childId);
                 $child = $this->getProductData($_childProduct);
+                $child['_raw_child_url'] = @$child['url'];
                 $child['url'] = $_product->getProductUrl();
                 $return[] = $child;
                 $_childProduct->clearInstance();
@@ -346,6 +350,7 @@ class Index extends \Magento\Framework\App\Action\Action
                 {
                     $_childProduct = $this->getProductById($_childId);
                     $child = $this->getProductData($_childProduct);
+                    $child['_raw_child_url'] = @$child['url'];
                     $child['url'] = $_product->getProductUrl();
                     if($type == 'bundle'){
                         $child['bundle_option_id'] = $optionId;
