@@ -130,6 +130,10 @@ class Index extends \Magento\Framework\App\Action\Action
 
                 $this->setLoadFromCache(@$request['load_from_cache']);
 
+                if(isset($request['load_all_currencies'])){
+                    $this->setLoadAllCurrencies((bool)$request['load_all_currencies']);
+                }
+
 				/** @var \Magento\Framework\DataObject[] $products */
 				$products = $this->getProducts($request);
 
@@ -175,6 +179,12 @@ class Index extends \Magento\Framework\App\Action\Action
     public function setLoadFromCache($option)
     {
         $this->productController->setLoadFromCache($option);
+    }
+
+    public function setLoadAllCurrencies($value)
+    {
+        $this->loadAllCurrencies = (bool)$value;
+        $this->productController->setLoadAllCurrencies($value);
     }
 
 	public function setStoreId($id)

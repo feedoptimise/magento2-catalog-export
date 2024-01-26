@@ -31,6 +31,8 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $extensionSettings;
     protected $storeController;
     protected $storeId;
+
+    protected $currencyHelper;
     /**
      * Product Searching Variables
      * @var \Magento\Catalog\Model\CategoryRepository $categoryRepository
@@ -47,6 +49,8 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $productStatus;
     protected $productVisibility;
     protected $getSourceItemsBySku;
+
+    protected $loadAllCurrencies = false;
 
     /** @var string  automatic | off | on  */
     protected $loadFromCache = 'automatic';
@@ -79,6 +83,7 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         // Extension Params
         \Feedoptimise\CatalogExport\Helper\Settings $extensionSettings,
+        \Feedoptimise\CatalogExport\Helper\Currency $currencyHelper,
         \Feedoptimise\CatalogExport\Controller\Stores\Index $storeController,
         // Product Searching Params
         \Magento\Catalog\Model\CategoryRepository $categoryRepository,
@@ -97,6 +102,7 @@ class Index extends \Magento\Framework\App\Action\Action
 
         // Extension Variables
         $this->extensionSettings = $extensionSettings;
+        $this->currencyHelper = $currencyHelper;
         $this->storeController = $storeController;
 
         // Product Searching Params
@@ -151,6 +157,10 @@ class Index extends \Magento\Framework\App\Action\Action
                 $currentStoreId = $this->storeController->getCurrentStoreId();
                 // set the current store
                 $this->setStoreId($request['store_id']);
+
+                if(isset($request['load_all_currencies'])){
+                    $this->setLoadAllCurrencies((bool)$request['load_all_currencies']);
+                }
 
                 $this->setLoadFromCache(@$request['load_from_cache']);
 
@@ -207,6 +217,11 @@ class Index extends \Magento\Framework\App\Action\Action
     {
         $this->storeController->setStore($storeId);
         $this->storeId = (int)$storeId;
+    }
+
+    public function setLoadAllCurrencies($value)
+    {
+        $this->loadAllCurrencies = (bool)$value;
     }
 
     public function setLoadFromCache($option)
@@ -448,6 +463,10 @@ class Index extends \Magento\Framework\App\Action\Action
         {}
         catch (\Throwable $e)
         {}
+
+        if($this->loadAllCurrencies)
+            $product['currencies'] = $this->currencyHelper->getCurrencyPriceForProduct($_product);
+
         $product['mis_stock_source'] = $this->getSourceItemsBySku($_product->getSku());
         $product['url'] = $_product->getProductUrl();
         $product['image'] = $this->storeController->baseImageUrl.$_product->getImage();

@@ -1,3 +1,6 @@
+### 1.2.38 (2024-01-26)
+  1. Support for loading all Currencies
+
 ### 1.2.37 (2022-11-22)
   1. Child url added to product variants
 
