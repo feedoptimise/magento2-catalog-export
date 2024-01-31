@@ -19,7 +19,7 @@ class Currency extends AbstractHelper
         $this->_storeManager = $storeManager;
         $this->_currency = $currency;
 
-        parent::__construct($context, $data);
+        parent::__construct($context);
     }
 
     public function getCurrencyPriceForProduct($product)
