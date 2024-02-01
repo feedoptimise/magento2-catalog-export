@@ -1,3 +1,6 @@
+### 1.2.39 (2024-02-01)
+  1. Fixed currency parent construct - Issue #1
+
 ### 1.2.38 (2024-01-26)
   1. Support for loading all Currencies
 
