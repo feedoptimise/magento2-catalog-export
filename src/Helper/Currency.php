@@ -12,8 +12,7 @@ class Currency extends AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Directory\Model\Currency $currency,
-        array $data = []
+        \Magento\Directory\Model\Currency $currency
     )
     {
         $this->_storeManager = $storeManager;

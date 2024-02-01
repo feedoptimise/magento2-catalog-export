@@ -1,3 +1,5 @@
+### 1.2.40 (2024-02-01)
+     1. Tag fix
 ### 1.2.39 (2024-02-01)
   1. Fixed currency parent construct - Issue #1
 
