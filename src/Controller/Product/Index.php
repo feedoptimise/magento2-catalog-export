@@ -49,6 +49,7 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $productStatus;
     protected $productVisibility;
     protected $getSourceItemsBySku;
+    protected $getSalableQuantityDataBySku;
 
     protected $loadAllCurrencies = false;
 
@@ -92,7 +93,8 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus,
         \Magento\Catalog\Model\Product\Visibility $productVisibility,
-        \Feedoptimise\CatalogExport\Model\Source\SourceFactory $getSourceItemsBySku
+        \Feedoptimise\CatalogExport\Model\Source\SourceFactory $getSourceItemsBySku,
+        \Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku $getSalableQuantityDataBySku
     )
     {
         // Framework Variables
@@ -112,6 +114,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productStatus = $productStatus;
         $this->productVisibility = $productVisibility;
+        $this->getSalableQuantityDataBySku = $getSalableQuantityDataBySku;
         $this->getSourceItemsBySku = $getSourceItemsBySku->create(['type' => 'GetSourceItemsBySku']);
 
         return parent::__construct($context);
@@ -459,6 +462,9 @@ class Index extends \Magento\Framework\App\Action\Action
                 'manage_stock' => $stockItem->getData('manage_stock'),
                 'backorders' => $stockItem->getData('backorders')
             ];
+
+            $salable = $this->getSalableQuantityDataBySku->execute($_product->getSku());
+            $product['salable_qty'] = $salable;
         } catch (\Exception $e)
         {}
         catch (\Throwable $e)
