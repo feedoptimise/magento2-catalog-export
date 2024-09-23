@@ -93,8 +93,7 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus,
         \Magento\Catalog\Model\Product\Visibility $productVisibility,
-        \Feedoptimise\CatalogExport\Model\Source\SourceFactory $getSourceItemsBySku,
-        \Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku $getSalableQuantityDataBySku
+        \Feedoptimise\CatalogExport\Model\Source\SourceFactory $getSourceItemsBySku
     )
     {
         // Framework Variables
@@ -114,7 +113,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productStatus = $productStatus;
         $this->productVisibility = $productVisibility;
-        $this->getSalableQuantityDataBySku = $getSalableQuantityDataBySku;
+        $this->getSalableQuantityDataBySku = $getSourceItemsBySku->create(['type' => 'GetSalableQuantityDataBySku']);
         $this->getSourceItemsBySku = $getSourceItemsBySku->create(['type' => 'GetSourceItemsBySku']);
 
         return parent::__construct($context);
@@ -354,10 +353,16 @@ class Index extends \Magento\Framework\App\Action\Action
     {
         $return = [];
         $options = [];
+        $bundleOptions = [];
         if($type == 'bundle'){
             $optionCollection = $_product->getTypeInstance(true)->getOptionsCollection($_product);
             foreach ($optionCollection as $option){
                 $options[$option->getOptionId()] = $option->getTitle();
+            }
+            $res = $_product->getTypeInstance(true)->getSelectionsCollection(
+                $_product->getTypeInstance(true)->getOptionsIds($_product), $_product);
+            foreach ($res as $re){
+                $bundleOptions[$re->getId()] = $re->getData();
             }
         }
 
@@ -370,11 +375,14 @@ class Index extends \Magento\Framework\App\Action\Action
                     $child = $this->getProductData($_childProduct);
                     $child['_raw_child_url'] = @$child['url'];
                     $child['url'] = $_product->getProductUrl();
+                    if(isset($bundleOptions[$_childId]))
+                        $child['bundle_option'] = $bundleOptions[$_childId];
                     if($type == 'bundle'){
                         $child['bundle_option_id'] = $optionId;
                         if(@$options[$optionId])
                             $child['bundle_option_title'] = $options[$optionId];
                     }
+
 
                     $return[] = $child;
                     $_childProduct->clearInstance();
@@ -463,8 +471,10 @@ class Index extends \Magento\Framework\App\Action\Action
                 'backorders' => $stockItem->getData('backorders')
             ];
 
-            $salable = $this->getSalableQuantityDataBySku->execute($_product->getSku());
-            $product['salable_qty'] = $salable;
+            if($this->getSalableQuantityDataBySku){
+                $salable = $this->getSalableQuantityDataBySku->execute($_product->getSku());
+                $product['salable_qty'] = $salable;
+            }
         } catch (\Exception $e)
         {}
         catch (\Throwable $e)

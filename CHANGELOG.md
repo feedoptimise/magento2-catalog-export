@@ -1,3 +1,7 @@
+### 1.2.42 (2024-09-23)
+     1. Added product bundle option settings
+     2. Fix issue with salable quantity when the Inventory module is disabled
+
 ### 1.2.41 (2024-08-28)
      1. Added salable quantity to the product data
 

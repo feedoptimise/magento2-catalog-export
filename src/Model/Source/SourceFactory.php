@@ -22,6 +22,8 @@ class SourceFactory
                 $instanceName =  '\Magento\Inventory\Model\SourceItem\Command\GetSourceItemsBySku';
             elseif ($data['type'] == 'SourceRepositoryInterface')
                 $instanceName =  '\Magento\InventoryApi\Api\SourceRepositoryInterface';
+            elseif ($data['type'] == 'GetSalableQuantityDataBySku')
+                $instanceName =  '\Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku';
             return $this->objectManager->create($instanceName, $data);
         }
         return false;
