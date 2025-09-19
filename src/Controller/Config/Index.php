@@ -46,6 +46,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		$result = $this->resultJsonFactory->create();
 		$data = [
 			'enabled' => $this->extensionSettings->getGeneralConfig('enable'),
+			'order_report' => $this->extensionSettings->getGeneralConfig('order_report'),
 			'security_token' => ($this->extensionSettings->getGeneralConfig('security_token') !== null),
 			'ver' => $this->extensionSettings->getVersion(),
 		];

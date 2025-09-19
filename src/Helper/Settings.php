@@ -117,4 +117,17 @@ class Settings extends AbstractHelper
 			return true;
 		}
 	}
+
+    public function orderReportEnabled()
+    {
+        if(!$this->getGeneralConfig('order_report'))
+        {
+            return [
+                'error' => true,
+                'code' => 400,
+                'error_msg' => 'Order report is not enabled!'
+            ];
+        }
+        return true;
+    }
 }

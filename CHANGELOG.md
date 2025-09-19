@@ -1,3 +1,6 @@
+### 1.2.43 (2025-09-19)
+     1. Added order reports endpoint
+
 ### 1.2.42 (2024-09-23)
      1. Added product bundle option settings
      2. Fix issue with salable quantity when the Inventory module is disabled

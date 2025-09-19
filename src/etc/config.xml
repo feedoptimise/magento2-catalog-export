@@ -11,6 +11,7 @@
         <feedoptimise_catalog_export>
             <general>
                 <enable>1</enable>
+                <order_report>1</order_report>
                 <security_token></security_token>
             </general>
         </feedoptimise_catalog_export>
