@@ -1,3 +1,6 @@
+### 1.2.44 (2026-02-03)
+     1. PHP 8 - compatibility fix
+
 ### 1.2.43 (2025-09-19)
      1. Added order reports endpoint
 
