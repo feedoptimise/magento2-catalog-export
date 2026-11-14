@@ -639,7 +639,7 @@ class Index extends \Magento\Framework\App\Action\Action
             (empty($product['image']) || strpos($product['image'],'productno_selection') !== false)
             && !empty($product['images'])
         ){
-            $product['image'] = $product['images'][0];
+            $product['image'] = $product['images'][0]['url'] ?? $product['image'];
         }
 
         unset($product['media_gallery']);
